@@ -17,7 +17,7 @@ func getSessionConfig(ctx context.Context, d *plugin.QueryData) (*pagerduty.Clie
 		return cachedData.(*pagerduty.Client), nil
 	}
 
-	// Get scaleway config
+	// Get pagerduty config
 	pagerDutyConfig := GetConfig(d.Connection)
 
 	// Get the authorization token
