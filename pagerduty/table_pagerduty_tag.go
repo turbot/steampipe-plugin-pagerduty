@@ -25,10 +25,6 @@ func tablePagerDutyTag(_ context.Context) *plugin.Table {
 				},
 			},
 		},
-		Get: &plugin.GetConfig{
-			Hydrate:    getPagerDutyTag,
-			KeyColumns: plugin.SingleColumn("id"),
-		},
 		Columns: []*plugin.Column{
 			{
 				Name:        "id",
@@ -76,7 +72,7 @@ func tablePagerDutyTag(_ context.Context) *plugin.Table {
 
 //// LIST FUNCTION
 
-func listPagerDutyTags(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
+func listPagerDutyTags(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	// Create client
 	client, err := getSessionConfig(ctx, d)
 	if err != nil {
@@ -103,12 +99,18 @@ func listPagerDutyTags(ctx context.Context, d *plugin.QueryData, _ *plugin.Hydra
 	}
 	req.APIListObject.Limit = maxResult
 
-	resp, err := client.ListTagsPaginated(ctx, req)
+	listPage := func(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+		data, err := client.ListTagsPaginated(ctx, req)
+		return data, err
+	}
+	listResponse, err := plugin.RetryHydrate(ctx, d, h, listPage, &plugin.RetryConfig{ShouldRetryError: shouldRetryError})
 	if err != nil {
 		plugin.Logger(ctx).Error("pagerduty_tag.listPagerDutyTags", "query_error", err)
+		return nil, err
 	}
+	tags := listResponse.([]*pagerduty.Tag)
 
-	for _, tag := range resp {
+	for _, tag := range tags {
 		d.StreamListItem(ctx, tag)
 
 		// Context can be cancelled due to manual cancellation or the limit has been hit
@@ -118,33 +120,4 @@ func listPagerDutyTags(ctx context.Context, d *plugin.QueryData, _ *plugin.Hydra
 	}
 
 	return nil, nil
-}
-
-//// HYDRATE FUNCTIONS
-
-func getPagerDutyTag(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
-	// Create client
-	client, err := getSessionConfig(ctx, d)
-	if err != nil {
-		plugin.Logger(ctx).Error("pagerduty_tag.getPagerDutyTag", "connection_error", err)
-		return nil, err
-	}
-	id := d.KeyColumnQuals["id"].GetStringValue()
-
-	// No inputs
-	if id == "" {
-		return nil, nil
-	}
-
-	data, r, err := client.GetTagWithContext(ctx, id)
-	if err != nil {
-		plugin.Logger(ctx).Error("pagerduty_tag.getPagerDutyTag", "query_error", err)
-
-		if r.StatusCode == 404 {
-			return nil, nil
-		}
-		return nil, err
-	}
-
-	return data, nil
 }

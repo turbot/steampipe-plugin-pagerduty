@@ -176,6 +176,7 @@ func listPagerDutyServices(ctx context.Context, d *plugin.QueryData, _ *plugin.H
 	resp, err := client.ListServicesPaginated(ctx, req)
 	if err != nil {
 		plugin.Logger(ctx).Error("pagerduty_service.listPagerDutyServices", "query_error", err)
+		return nil, err
 	}
 
 	for _, service := range resp {

@@ -77,8 +77,19 @@ func tablePagerDutyUser(_ context.Context) *plugin.Table {
 				Type:        proto.ColumnType_STRING,
 			},
 			{
+				Name:        "html_url",
+				Description: "An URL at which the entity is uniquely displayed in the Web app.",
+				Type:        proto.ColumnType_STRING,
+				Transform:   transform.FromField("HTMLURL").Transform(transform.NullIfZeroValue),
+			},
+			{
 				Name:        "job_title",
 				Description: "The user's job title.",
+				Type:        proto.ColumnType_STRING,
+			},
+			{
+				Name:        "self",
+				Description: "The API show URL at which the object is accessible.",
 				Type:        proto.ColumnType_STRING,
 			},
 			{
@@ -132,7 +143,7 @@ func tablePagerDutyUser(_ context.Context) *plugin.Table {
 
 //// LIST FUNCTION
 
-func listPagerDutyUsers(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
+func listPagerDutyUsers(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	// Create client
 	client, err := getSessionConfig(ctx, d)
 	if err != nil {
@@ -162,13 +173,19 @@ func listPagerDutyUsers(ctx context.Context, d *plugin.QueryData, _ *plugin.Hydr
 	}
 	req.APIListObject.Limit = maxResult
 
+	listPage := func(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+		users, err := client.ListUsersWithContext(ctx, req)
+		return users, err
+	}
 	for {
-		resp, err := client.ListUsersWithContext(ctx, req)
+		listPageResponse, err := plugin.RetryHydrate(ctx, d, h, listPage, &plugin.RetryConfig{ShouldRetryError: shouldRetryError})
 		if err != nil {
 			plugin.Logger(ctx).Error("pagerduty_user.listPagerDutyUsers", "query_error", err)
+			return nil, err
 		}
+		listResponse := listPageResponse.(*pagerduty.ListUsersResponse)
 
-		for _, user := range resp.Users {
+		for _, user := range listResponse.Users {
 			d.StreamListItem(ctx, user)
 
 			// Context can be cancelled due to manual cancellation or the limit has been hit
@@ -177,10 +194,10 @@ func listPagerDutyUsers(ctx context.Context, d *plugin.QueryData, _ *plugin.Hydr
 			}
 		}
 
-		if !resp.APIListObject.More {
+		if !listResponse.APIListObject.More {
 			break
 		}
-		req.APIListObject.Offset = resp.Offset + 1
+		req.APIListObject.Offset = listResponse.Offset + 1
 	}
 
 	return nil, nil
@@ -202,7 +219,11 @@ func getPagerDutyUser(ctx context.Context, d *plugin.QueryData, h *plugin.Hydrat
 		return nil, nil
 	}
 
-	data, err := client.GetUserWithContext(ctx, id, pagerduty.GetUserOptions{})
+	getDetails := func(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+		data, err := client.GetUserWithContext(ctx, id, pagerduty.GetUserOptions{})
+		return data, err
+	}
+	getResponse, err := plugin.RetryHydrate(ctx, d, h, getDetails, &plugin.RetryConfig{ShouldRetryError: shouldRetryError})
 	if err != nil {
 		plugin.Logger(ctx).Error("pagerduty_user.getPagerDutyUser", "query_error", err)
 
@@ -211,8 +232,9 @@ func getPagerDutyUser(ctx context.Context, d *plugin.QueryData, h *plugin.Hydrat
 		}
 		return nil, err
 	}
+	getResp := getResponse.(*pagerduty.User)
 
-	return *data, nil
+	return *getResp, nil
 }
 
 func listPagerDutyUserTags(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
@@ -225,11 +247,16 @@ func listPagerDutyUserTags(ctx context.Context, d *plugin.QueryData, h *plugin.H
 		return nil, err
 	}
 
-	resp, err := client.GetTagsForEntityPaginated(ctx, "users", data.ID, pagerduty.ListTagOptions{})
+	getDetails := func(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+		data, err := client.GetTagsForEntityPaginated(ctx, "users", data.ID, pagerduty.ListTagOptions{})
+		return data, err
+	}
+	getResponse, err := plugin.RetryHydrate(ctx, d, h, getDetails, &plugin.RetryConfig{ShouldRetryError: shouldRetryError})
 	if err != nil {
 		plugin.Logger(ctx).Error("pagerduty_user.listPagerDutyUserTags", "query_error", err)
 		return nil, err
 	}
+	getResp := getResponse.([]*pagerduty.Tag)
 
-	return resp, nil
+	return getResp, nil
 }

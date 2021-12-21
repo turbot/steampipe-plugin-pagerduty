@@ -3,6 +3,7 @@ package pagerduty
 import (
 	"context"
 
+	"github.com/PagerDuty/go-pagerduty"
 	"github.com/turbot/steampipe-plugin-sdk/grpc/proto"
 	"github.com/turbot/steampipe-plugin-sdk/plugin"
 	"github.com/turbot/steampipe-plugin-sdk/plugin/transform"
@@ -69,7 +70,7 @@ func tablePagerDutyPriority(_ context.Context) *plugin.Table {
 
 //// LIST FUNCTION
 
-func listPagerDutyPriorities(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
+func listPagerDutyPriorities(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	// Create client
 	client, err := getSessionConfig(ctx, d)
 	if err != nil {
@@ -77,14 +78,20 @@ func listPagerDutyPriorities(ctx context.Context, d *plugin.QueryData, _ *plugin
 		return nil, err
 	}
 
-	resp, err := client.ListPrioritiesWithContext(ctx)
+	listPage := func(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+		data, err := client.ListPrioritiesWithContext(ctx)
+		return data, err
+	}
+	listResponse, err := plugin.RetryHydrate(ctx, d, h, listPage, &plugin.RetryConfig{ShouldRetryError: shouldRetryError})
 	if err != nil {
+		// If incident priority level is not enabled, API returns 404 Not Found error
 		if isNotFoundError(err) {
 			return nil, nil
 		}
-
 		plugin.Logger(ctx).Error("pagerduty_priority.listPagerDutyPriorities", "query_error", err)
+		return nil, err
 	}
+	resp := listResponse.(*pagerduty.Priorities)
 
 	for _, priority := range resp.Priorities {
 		d.StreamListItem(ctx, priority)

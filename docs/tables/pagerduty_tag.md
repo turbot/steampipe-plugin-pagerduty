@@ -46,8 +46,7 @@ distinct_tags as (
 select
   t.id,
   t.label,
-  t.self,
-  dt.id
+  t.self
 from
   pagerduty_tag as t
   left join distinct_tags as dt on t.id = dt.id

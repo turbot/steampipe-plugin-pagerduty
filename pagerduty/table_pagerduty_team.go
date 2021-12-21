@@ -95,7 +95,7 @@ func tablePagerDutyTeam(_ context.Context) *plugin.Table {
 
 //// LIST FUNCTION
 
-func listPagerDutyTeams(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
+func listPagerDutyTeams(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	// Create client
 	client, err := getSessionConfig(ctx, d)
 	if err != nil {
@@ -122,13 +122,19 @@ func listPagerDutyTeams(ctx context.Context, d *plugin.QueryData, _ *plugin.Hydr
 	}
 	req.APIListObject.Limit = maxResult
 
+	listPage := func(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+		teams, err := client.ListTeamsWithContext(ctx, req)
+		return teams, err
+	}
 	for {
-		resp, err := client.ListTeamsWithContext(ctx, req)
+		listPageResponse, err := plugin.RetryHydrate(ctx, d, h, listPage, &plugin.RetryConfig{ShouldRetryError: shouldRetryError})
 		if err != nil {
 			plugin.Logger(ctx).Error("pagerduty_team.listPagerDutyTeams", "query_error", err)
+			return nil, err
 		}
+		listResponse := listPageResponse.(*pagerduty.ListTeamResponse)
 
-		for _, team := range resp.Teams {
+		for _, team := range listResponse.Teams {
 			d.StreamListItem(ctx, team)
 
 			// Context can be cancelled due to manual cancellation or the limit has been hit
@@ -137,10 +143,10 @@ func listPagerDutyTeams(ctx context.Context, d *plugin.QueryData, _ *plugin.Hydr
 			}
 		}
 
-		if !resp.APIListObject.More {
+		if !listResponse.APIListObject.More {
 			break
 		}
-		req.APIListObject.Offset = resp.Offset + 1
+		req.APIListObject.Offset = listResponse.Offset + 1
 	}
 
 	return nil, nil
@@ -162,7 +168,11 @@ func getPagerDutyTeam(ctx context.Context, d *plugin.QueryData, h *plugin.Hydrat
 		return nil, nil
 	}
 
-	data, err := client.GetTeamWithContext(ctx, id)
+	getDetails := func(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+		data, err := client.GetTeamWithContext(ctx, id)
+		return data, err
+	}
+	getResponse, err := plugin.RetryHydrate(ctx, d, h, getDetails, &plugin.RetryConfig{ShouldRetryError: shouldRetryError})
 	if err != nil {
 		plugin.Logger(ctx).Error("pagerduty_team.getPagerDutyTeam", "query_error", err)
 
@@ -171,8 +181,9 @@ func getPagerDutyTeam(ctx context.Context, d *plugin.QueryData, h *plugin.Hydrat
 		}
 		return nil, err
 	}
+	getResp := getResponse.(*pagerduty.Team)
 
-	return *data, nil
+	return *getResp, nil
 }
 
 func listPagerDutyTeamMembers(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
@@ -185,13 +196,18 @@ func listPagerDutyTeamMembers(ctx context.Context, d *plugin.QueryData, h *plugi
 		return nil, err
 	}
 
-	resp, err := client.ListMembersPaginated(ctx, data.ID)
+	listPage := func(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+		data, err := client.ListMembersPaginated(ctx, data.ID)
+		return data, err
+	}
+	listResponse, err := plugin.RetryHydrate(ctx, d, h, listPage, &plugin.RetryConfig{ShouldRetryError: shouldRetryError})
 	if err != nil {
 		plugin.Logger(ctx).Error("pagerduty_team.listPagerDutyTeams", "query_error", err)
 		return nil, err
 	}
+	members := listResponse.([]pagerduty.Member)
 
-	return resp, nil
+	return members, nil
 }
 
 func listPagerDutyTeamTags(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
@@ -204,11 +220,16 @@ func listPagerDutyTeamTags(ctx context.Context, d *plugin.QueryData, h *plugin.H
 		return nil, err
 	}
 
-	resp, err := client.GetTagsForEntityPaginated(ctx, "teams", data.ID, pagerduty.ListTagOptions{})
+	getDetails := func(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+		data, err := client.GetTagsForEntityPaginated(ctx, "teams", data.ID, pagerduty.ListTagOptions{})
+		return data, err
+	}
+	getResponse, err := plugin.RetryHydrate(ctx, d, h, getDetails, &plugin.RetryConfig{ShouldRetryError: shouldRetryError})
 	if err != nil {
 		plugin.Logger(ctx).Error("pagerduty_team.listPagerDutyTeamTags", "query_error", err)
 		return nil, err
 	}
+	getResp := getResponse.([]*pagerduty.Tag)
 
-	return resp, nil
+	return getResp, nil
 }

@@ -41,7 +41,7 @@ select
 from
   pagerduty_user
 where
-  teams is null;
+  jsonb_array_length(teams) < 1;
 ```
 
 ### List users with `owner` tags

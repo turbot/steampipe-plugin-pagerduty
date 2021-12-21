@@ -83,6 +83,7 @@ func listPagerDutyRulesets(ctx context.Context, d *plugin.QueryData, _ *plugin.H
 	resp, err := client.ListRulesetsPaginated(ctx)
 	if err != nil {
 		plugin.Logger(ctx).Error("pagerduty_ruleset.listPagerDutyRulesets", "query_error", err)
+		return nil, err
 	}
 
 	for _, ruleset := range resp {

@@ -109,14 +109,13 @@ func tablePagerDutyEscalationPolicy(_ context.Context) *plugin.Table {
 
 //// LIST FUNCTION
 
-func listPagerDutyEscalationPolicies(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
+func listPagerDutyEscalationPolicies(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	// Create client
 	client, err := getSessionConfig(ctx, d)
 	if err != nil {
 		plugin.Logger(ctx).Error("pagerduty_escalation_policy.listPagerDutyEscalationPolicies", "connection_error", err)
 		return nil, err
 	}
-
 	req := pagerduty.ListEscalationPoliciesOptions{}
 
 	// Additional Filters
@@ -136,13 +135,19 @@ func listPagerDutyEscalationPolicies(ctx context.Context, d *plugin.QueryData, _
 	}
 	req.APIListObject.Limit = maxResult
 
+	listPage := func(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+		policies, err := client.ListEscalationPoliciesWithContext(ctx, req)
+		return policies, err
+	}
 	for {
-		resp, err := client.ListEscalationPoliciesWithContext(ctx, req)
+		listPageResponse, err := plugin.RetryHydrate(ctx, d, h, listPage, &plugin.RetryConfig{ShouldRetryError: shouldRetryError})
 		if err != nil {
 			plugin.Logger(ctx).Error("pagerduty_escalation_policy.listPagerDutyEscalationPolicies", "query_error", err)
+			return nil, err
 		}
+		listResponse := listPageResponse.(*pagerduty.ListEscalationPoliciesResponse)
 
-		for _, policy := range resp.EscalationPolicies {
+		for _, policy := range listResponse.EscalationPolicies {
 			d.StreamListItem(ctx, policy)
 
 			// Context can be cancelled due to manual cancellation or the limit has been hit
@@ -151,10 +156,10 @@ func listPagerDutyEscalationPolicies(ctx context.Context, d *plugin.QueryData, _
 			}
 		}
 
-		if !resp.APIListObject.More {
+		if !listResponse.APIListObject.More {
 			break
 		}
-		req.APIListObject.Offset = resp.Offset + 1
+		req.APIListObject.Offset = listResponse.Offset + 1
 	}
 
 	return nil, nil
@@ -176,7 +181,11 @@ func getPagerDutyEscalationPolicy(ctx context.Context, d *plugin.QueryData, h *p
 		return nil, nil
 	}
 
-	data, err := client.GetEscalationPolicyWithContext(ctx, id, &pagerduty.GetEscalationPolicyOptions{})
+	getDetails := func(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+		data, err := client.GetEscalationPolicyWithContext(ctx, id, &pagerduty.GetEscalationPolicyOptions{})
+		return data, err
+	}
+	getResponse, err := plugin.RetryHydrate(ctx, d, h, getDetails, &plugin.RetryConfig{ShouldRetryError: shouldRetryError})
 	if err != nil {
 		plugin.Logger(ctx).Error("pagerduty_escalation_policy.getPagerDutyEscalationPolicy", "query_error", err)
 
@@ -185,8 +194,9 @@ func getPagerDutyEscalationPolicy(ctx context.Context, d *plugin.QueryData, h *p
 		}
 		return nil, err
 	}
+	getResp := getResponse.(*pagerduty.EscalationPolicy)
 
-	return *data, nil
+	return *getResp, nil
 }
 
 func listPagerDutyEscalationPolicyTags(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
@@ -199,11 +209,16 @@ func listPagerDutyEscalationPolicyTags(ctx context.Context, d *plugin.QueryData,
 		return nil, err
 	}
 
-	resp, err := client.GetTagsForEntityPaginated(ctx, "escalation_policies", data.ID, pagerduty.ListTagOptions{})
+	getDetails := func(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+		data, err := client.GetTagsForEntityPaginated(ctx, "escalation_policies", data.ID, pagerduty.ListTagOptions{})
+		return data, err
+	}
+	getResponse, err := plugin.RetryHydrate(ctx, d, h, getDetails, &plugin.RetryConfig{ShouldRetryError: shouldRetryError})
 	if err != nil {
 		plugin.Logger(ctx).Error("pagerduty_escalation_policy.listPagerDutyEscalationPolicyTags", "query_error", err)
 		return nil, err
 	}
+	getResp := getResponse.([]*pagerduty.Tag)
 
-	return resp, nil
+	return getResp, nil
 }
