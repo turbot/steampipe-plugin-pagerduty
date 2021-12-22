@@ -87,7 +87,7 @@ func listPagerDutyTags(ctx context.Context, d *plugin.QueryData, h *plugin.Hydra
 		req.Query = d.KeyColumnQuals["label"].GetStringValue()
 	}
 
-	// Retrieve the list of teams
+	// Retrieve the list of tags
 	maxResult := uint(100)
 
 	// Reduce the basic request limit down if the user has only requested a small number of rows

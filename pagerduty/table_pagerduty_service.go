@@ -80,7 +80,7 @@ func tablePagerDutyService(_ context.Context) *plugin.Table {
 				Name:        "html_url",
 				Description: "An URL at which the entity is uniquely displayed in the Web app.",
 				Type:        proto.ColumnType_STRING,
-				Transform:   transform.FromField("HTMLURL"),
+				Transform:   transform.FromField("HTMLURL").NullIfZero(),
 			},
 			{
 				Name:        "last_incident_timestamp",
@@ -161,7 +161,7 @@ func listPagerDutyServices(ctx context.Context, d *plugin.QueryData, _ *plugin.H
 		req.Query = d.KeyColumnQuals["name"].GetStringValue()
 	}
 
-	// Retrieve the list of users
+	// Retrieve the list of services
 	maxResult := uint(100)
 
 	// Reduce the basic request limit down if the user has only requested a small number of rows

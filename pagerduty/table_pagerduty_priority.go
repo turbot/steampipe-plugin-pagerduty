@@ -44,7 +44,7 @@ func tablePagerDutyPriority(_ context.Context) *plugin.Table {
 				Name:        "html_url",
 				Description: "An URL at which the entity is uniquely displayed in the Web app.",
 				Type:        proto.ColumnType_STRING,
-				Transform:   transform.FromField("HTMLURL").Transform(transform.NullIfZeroValue),
+				Transform:   transform.FromField("HTMLURL").NullIfZero(),
 			},
 			{
 				Name:        "summary",

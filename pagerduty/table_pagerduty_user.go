@@ -80,7 +80,7 @@ func tablePagerDutyUser(_ context.Context) *plugin.Table {
 				Name:        "html_url",
 				Description: "An URL at which the entity is uniquely displayed in the Web app.",
 				Type:        proto.ColumnType_STRING,
-				Transform:   transform.FromField("HTMLURL").Transform(transform.NullIfZeroValue),
+				Transform:   transform.FromField("HTMLURL").NullIfZero(),
 			},
 			{
 				Name:        "job_title",
@@ -173,6 +173,15 @@ func listPagerDutyUsers(ctx context.Context, d *plugin.QueryData, h *plugin.Hydr
 	}
 	req.APIListObject.Limit = maxResult
 
+	// Check for additional models to include in response
+	// for example, contact_methods, notification_rules, teams
+	givenColumns := d.QueryContext.Columns
+	includeFields := buildUserRequestFields(ctx, givenColumns)
+
+	if len(includeFields) > 0 {
+		req.Includes = includeFields
+	}
+
 	listPage := func(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 		users, err := client.ListUsersWithContext(ctx, req)
 		return users, err
@@ -259,4 +268,14 @@ func listPagerDutyUserTags(ctx context.Context, d *plugin.QueryData, h *plugin.H
 	getResp := getResponse.([]*pagerduty.Tag)
 
 	return getResp, nil
+}
+
+func buildUserRequestFields(ctx context.Context, queryColumns []string) []string {
+	var fields []string
+	for _, columnName := range queryColumns {
+		if columnName == "contact_methods" || columnName == "notification_rules" || columnName == "teams" {
+			fields = append(fields, columnName)
+		}
+	}
+	return fields
 }
