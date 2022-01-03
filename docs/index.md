@@ -66,7 +66,7 @@ connection "pagerduty" {
   
   # Account/user API token authentication
   # This can also be set via the `PAGERDUTY_TOKEN` environment variable.
-  # token = "YOUR_AUTH_TOKEN"
+  # token = "u+AtBdqvNtestTokeNcg"
 
   # A custom proxy endpoint as PagerDuty client API URL overriding 'service_region' setup.
   # Default is "https://api.pagerduty.com"
@@ -77,4 +77,4 @@ connection "pagerduty" {
 ## Get involved
 
 - Open source: https://github.com/turbot/steampipe-plugin-pagerduty
-- Community: [Slack Channel](https://join.slack.com/t/steampipe/shared_invite/zt-oij778tv-lYyRTWOTMQYBVAbtPSWs3g)
+- Community: [Slack Channel](https://steampipe.io/community/join)

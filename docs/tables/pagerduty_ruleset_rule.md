@@ -42,7 +42,7 @@ from
 group by rs.id;
 ```
 
-### List rules with no priority
+### List rules without any priority
 
 ```sql
 select

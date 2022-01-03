@@ -45,7 +45,7 @@ where
   and jsonb_array_length(teams) < 1;
 ```
 
-### List policies that does not repeat if no one acknowledges incidents
+### List policies that does not repeat if incidents are not acknowledged
 
 ```sql
 select

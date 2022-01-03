@@ -20,7 +20,7 @@ from
   pagerduty_priority;
 ```
 
-### List event rules with high-priority(P1)
+### List event rules with highest-priority(P1)
 
 ```sql
 with priority as (
