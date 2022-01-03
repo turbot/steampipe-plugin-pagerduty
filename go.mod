@@ -4,7 +4,7 @@ go 1.17
 
 require (
 	github.com/PagerDuty/go-pagerduty v1.4.3
-	github.com/turbot/steampipe-plugin-sdk v1.8.2
+	github.com/turbot/steampipe-plugin-sdk v1.8.3
 )
 
 require (
