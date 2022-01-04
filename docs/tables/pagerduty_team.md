@@ -30,16 +30,19 @@ where
   members is null;
 ```
 
-### Get a team by name
+### List members with pending invitation
 
 ```sql
 select
-  name,
-  id,
-  description,
-  self
+  t.name as team_name,
+  member -> 'user' ->> 'summary' as user_name,
+  member ->> 'role' as role,
+  u.invitation_sent
 from
-  pagerduty_team
+  pagerduty_team as t,
+  jsonb_array_elements(members) as member,
+  pagerduty_user as u
 where
-  name = 'developer';
+  member -> 'user' ->> 'id' = u.id
+  and u.invitation_sent;
 ```
