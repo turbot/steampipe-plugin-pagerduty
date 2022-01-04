@@ -1,6 +1,6 @@
 ---
 organization: Turbot
-category: ["software development"]
+category: ["saas"]
 icon_url: "/images/plugins/turbot/pagerduty.svg"
 brand_color: "#00FF00"
 display_name: "PagerDuty"

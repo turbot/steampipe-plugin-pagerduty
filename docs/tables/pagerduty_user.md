@@ -30,7 +30,7 @@ where
   invitation_sent;
 ```
 
-### List users not belongs to any team
+### List users not in any team
 
 ```sql
 select
