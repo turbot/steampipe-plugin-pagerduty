@@ -1,10 +1,10 @@
 # Table: pagerduty_priority
 
- A priority is a label representing the importance and impact of an incident. This feature is only available on `Standard` and `Enterprise` plans.
+A priority is a label representing the importance and impact of an incident. This feature is only available on `Standard` and `Enterprise` plans.
 
- Incident priority levels help you classify the most important incidents from the least important ones. Teams can quickly see which incidents need their immediate attention. If your organization already have priority levels defined, you can customize these default values to match your existing incident classification scheme.
+Incident priority levels help you classify the most important incidents from the least important ones. Teams can quickly see which incidents need their immediate attention. If your organization already have priority levels defined, you can customize these default values to match your existing incident classification scheme.
 
- **Note:** To list the priorities, first [enable and configure your priorities](https://support.pagerduty.com/docs/incident-priority#section-enabling-incident-priority).
+**Note:** To list the priorities, first [enable and configure your priorities](https://support.pagerduty.com/docs/incident-priority#section-enabling-incident-priority).
 
 ## Examples
 
