@@ -16,7 +16,7 @@ og_image: "/images/plugins/turbot/pagerduty-social-graphic.png"
 
 [Steampipe](https://steampipe.io) is an open source CLI to instantly query cloud APIs using SQL.
 
-List services in your PagerDuty account:
+List disabled services in your PagerDuty account:
 
 ```sql
 select
@@ -24,7 +24,9 @@ select
   id,
   status
 from
-  pagerduty_service;
+  pagerduty_service
+where
+  status = 'disabled';
 ```
 
 ```

@@ -27,7 +27,9 @@ select
   id,
   status
 from
-  pagerduty_service;
+  pagerduty_service
+where
+  status = 'disabled';
 ```
 
 ## Developing
