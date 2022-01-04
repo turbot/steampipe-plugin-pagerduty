@@ -6,15 +6,11 @@ import (
 )
 
 type pagerDutyConfig struct {
-	ApiUrlOverride *string `cty:"api_url_override"`
-	Token          *string `cty:"token"`
+	Token *string `cty:"token"`
 }
 
 var ConfigSchema = map[string]*schema.Attribute{
 	"token": {
-		Type: schema.TypeString,
-	},
-	"api_url_override": {
 		Type: schema.TypeString,
 	},
 }

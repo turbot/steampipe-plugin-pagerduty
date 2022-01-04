@@ -31,15 +31,8 @@ func getSessionConfig(ctx context.Context, d *plugin.QueryData) (*pagerduty.Clie
 		return nil, fmt.Errorf("token must be configured")
 	}
 
-	opts := []pagerduty.ClientOptions{}
-	
-	// Override default PagerDuty Base URL. Default is "https://api.pagerduty.com"
-	if pagerDutyConfig.ApiUrlOverride != nil {
-		opts = append(opts, pagerduty.WithAPIEndpoint(*pagerDutyConfig.ApiUrlOverride))
-	}
-
 	// Create client
-	client := pagerduty.NewClient(token, opts...)
+	client := pagerduty.NewClient(token)
 
 	// save clientOptions in cache
 	d.ConnectionManager.Cache.Set(sessionCacheKey, client)

@@ -2,7 +2,7 @@
 organization: Turbot
 category: ["saas"]
 icon_url: "/images/plugins/turbot/pagerduty.svg"
-brand_color: "#00FF00"
+brand_color: "#06ac38"
 display_name: "PagerDuty"
 short_name: "pagerduty"
 description: "Steampipe plugin to query services, teams, escalation policies and more from your PagerDuty account."
@@ -67,10 +67,6 @@ connection "pagerduty" {
   # Account/user API token authentication
   # This can also be set via the `PAGERDUTY_TOKEN` environment variable.
   # token = "u+AtBdqvNtestTokeNcg"
-
-  # A custom proxy endpoint as PagerDuty client API URL overriding 'service_region' setup.
-  # Default is "https://api.pagerduty.com"
-  # api_url_override = "YOUR_CUSTOM_ENDPOINT"
 }
 ```
 
