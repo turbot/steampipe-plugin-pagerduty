@@ -55,7 +55,7 @@ steampipe plugin install pagerduty
 
 | Item | Description |
 | - | - |
-| Credentials | [Get your user token](https://support.pagerduty.com/docs/generating-api-keys#generating-a-personal-rest-api-key) from the [PagerDuty console](https://www.pagerduty.com); or if you have `Admin`, `Global Admin` or `Account Owner` access within your PagerDuty account, [generate a general authorization token](https://support.pagerduty.com/docs/generating-api-keys#generating-a-general-access-rest-api-key). |
+| Credentials | [Get your user token](https://support.pagerduty.com/docs/generating-api-keys#generating-a-personal-rest-api-key) or if you have `Admin`, `Global Admin` or `Account Owner` access within your PagerDuty account, [generate a general authorization token](https://support.pagerduty.com/docs/generating-api-keys#generating-a-general-access-rest-api-key). |
 | Resolution | 1. Credentials explicitly set in a steampipe config file (`~/.steampipe/config/pagerduty.spc`).<br />2. Credentials specified in environment variables, e.g., `PAGERDUTY_TOKEN`. |
 
 ### Configuration
@@ -65,7 +65,7 @@ Installing the latest pagerduty plugin will create a config file (`~/.steampipe/
 ```hcl
 connection "pagerduty" {
   plugin = "pagerduty"
-  
+
   # Account or user API token
   # This can also be set via the `PAGERDUTY_TOKEN` environment variable.
   # token = "u+AtBdqvNtestTokeNcg"
