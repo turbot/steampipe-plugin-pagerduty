@@ -217,6 +217,15 @@ func listPagerDutyIncidents(ctx context.Context, d *plugin.QueryData, h *plugin.
 			beforeTime := givenTime.Add(time.Duration(-1) * time.Second)
 			afterTime := givenTime.Add(time.Second * 1)
 
+		  // API doesn't supports listing incidents beyond 6 months
+			// if the queried range is more than 6 months, set `date_range` attribute to 'all'
+			currentTime := time.Now().UTC()
+			diffInDays := (currentTime.Sub(givenTime).Hours())/24
+			if diffInDays > 180 {
+				req.DateRange = "all"
+				break
+			}
+
 			switch q.Operator {
 			case ">":
 				req.Since = convertTimeString(afterTime)
@@ -310,5 +319,9 @@ func getPagerDutyIncident(ctx context.Context, d *plugin.QueryData, h *plugin.Hy
 }
 
 func convertTimeString(t time.Time) string {
+	return t.Format(time.RFC3339)
+}
+
+func calculateTimeDiff(t time.Time) string {
 	return t.Format(time.RFC3339)
 }

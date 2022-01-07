@@ -2,24 +2,11 @@
 
 An incident represents a problem or an issue that needs to be addressed and resolved.
 
+**Note:** If no `created_at` key qual is specified, incidents from the last 30 days will be returned by default.
+
 ## Examples
 
-### List unacknowledged incidents
-
-```sql
-select
-  incident_number,
-  summary,
-  urgency,
-  created_at,
-  assignments
-from
-  pagerduty_incident
-where
-  status = 'triggered';
-```
-
-### List unacknowledged incidents with high urgency
+### List unacknowledged incidents for the last 30 days
 
 ```sql
 select
@@ -32,10 +19,27 @@ from
   pagerduty_incident
 where
   status = 'triggered'
-  and urgency = 'high';
+  and created_at >= now() - interval '30 days';
 ```
 
-### List unacknowledged incidents assigned to a specific user
+### List unacknowledged incidents with high urgency for the last 1 week
+
+```sql
+select
+  incident_number,
+  summary,
+  urgency,
+  created_at,
+  assignments
+from
+  pagerduty_incident
+where
+  status = 'triggered'
+  and urgency = 'high'
+  and created_at >= now() - interval '7 days';
+```
+
+### List unacknowledged incidents assigned to a specific user in last 3 days
 
 ```sql
 select
@@ -50,7 +54,8 @@ from
   join pagerduty_user as p on p.id = a -> 'assignee' ->> 'id'
 where
   p.id = 'P5ISTE8'
-  and status = 'triggered';
+  and status = 'triggered'
+  and created_at >= now() - interval '3 days';
 ```
 
 ### List all unacknowledged incidents in last 7 days
