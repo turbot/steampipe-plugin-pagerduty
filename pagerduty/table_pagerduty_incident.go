@@ -321,7 +321,3 @@ func getPagerDutyIncident(ctx context.Context, d *plugin.QueryData, h *plugin.Hy
 func convertTimeString(t time.Time) string {
 	return t.Format(time.RFC3339)
 }
-
-func calculateTimeDiff(t time.Time) string {
-	return t.Format(time.RFC3339)
-}
