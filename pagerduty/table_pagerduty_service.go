@@ -173,6 +173,14 @@ func listPagerDutyServices(ctx context.Context, d *plugin.QueryData, _ *plugin.H
 	}
 	req.APIListObject.Limit = maxResult
 
+	// Check for additional models to include in response
+	// for example, escalation_policy, integrations, teams
+	givenColumns := d.QueryContext.Columns
+	includeFields := buildServiceRequestFields(ctx, givenColumns)
+	if len(includeFields) > 0 {
+		req.Includes = includeFields
+	}
+
 	resp, err := client.ListServicesPaginated(ctx, req)
 	if err != nil {
 		plugin.Logger(ctx).Error("pagerduty_service.listPagerDutyServices", "query_error", err)
@@ -218,4 +226,18 @@ func getPagerDutyService(ctx context.Context, d *plugin.QueryData, h *plugin.Hyd
 	}
 
 	return *data, nil
+}
+
+func buildServiceRequestFields(ctx context.Context, queryColumns []string) []string {
+	var fields []string
+	for _, columnName := range queryColumns {
+		switch columnName {
+		case "escalation_policy":
+			fields = append(fields, "escalation_policies")
+		case "teams":
+		case "integrations":
+			fields = append(fields, columnName)
+		}
+	}
+	return fields
 }
