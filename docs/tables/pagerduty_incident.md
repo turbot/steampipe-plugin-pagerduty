@@ -39,7 +39,7 @@ where
   and created_at >= now() - interval '7 days';
 ```
 
-### List unacknowledged incidents assigned to a specific user in last 3 days
+### List unacknowledged incidents assigned to a specific user for the last 3 days
 
 ```sql
 select
@@ -58,7 +58,7 @@ where
   and created_at >= now() - interval '3 days';
 ```
 
-### List all unacknowledged incidents in last 7 days
+### List all unacknowledged incidents for the last 7 days
 
 ```sql
 select
