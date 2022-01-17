@@ -149,6 +149,14 @@ func listPagerDutyIncidentLogs(ctx context.Context, d *plugin.QueryData, h *plug
 		}
 	}
 
+	// Check for additional models to include in response
+	// for example, incident, service, teams
+	givenColumns := d.QueryContext.Columns
+	includeFields := buildIncidentLogRequestFields(ctx, givenColumns)
+	if len(includeFields) > 0 {
+		req.Includes = includeFields
+	}
+
 	// Retrieve the list of incident logs
 	maxResult := uint(100)
 
@@ -191,6 +199,12 @@ func listPagerDutyIncidentLogs(ctx context.Context, d *plugin.QueryData, h *plug
 	return nil, nil
 }
 
-func convertTimeString(t time.Time) string {
-	return t.Format(time.RFC3339)
+func buildIncidentLogRequestFields(ctx context.Context, queryColumns []string) []string {
+	var fields []string
+	for _, columnName := range queryColumns {
+		if columnName == "teams" {
+			fields = append(fields, columnName)
+		}
+	}
+	return fields
 }

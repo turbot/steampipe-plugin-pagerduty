@@ -1,10 +1,14 @@
 # Table: pagerduty_incident_log
 
-Retrieves the record of all log entries for the specified incident.
+Retrieves the log entries for the specified incident.
+
+The `pagerduty_incident_log` table can be used to query log entries for ANY incident, and **you must specify the incident ID** in the where or join clause (`where incident_id=`, `join pagerduty_incident_log on incident_id=`).
+
+**Note:** It is recommended that queries to this table should include `created_at` column (usually in the `where` clause) to filter the log entries within a specific range.
 
 ## Examples
 
-### List all activities on specified incident in last 3 days
+### List incident logs for an incident from the last 3 days
 
 ```sql
 select
@@ -19,7 +23,7 @@ where
   and created_at > now() - interval '3 days';
 ```
 
-### List all activities performed by users
+### List incident log entries for activities performed by users
 
 ```sql
 select
@@ -36,7 +40,7 @@ where
   and agent ->> 'type' = 'user_reference';
 ```
 
-### List all activities performed by service
+### List incident log entries for activities performed by services
 
 ```sql
 select
