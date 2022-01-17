@@ -21,6 +21,7 @@ func Plugin(ctx context.Context) *plugin.Plugin {
 		},
 		TableMap: map[string]*plugin.Table{
 			"pagerduty_escalation_policy": tablePagerDutyEscalationPolicy(ctx),
+			"pagerduty_incident":          tablePagerDutyIncident(ctx),
 			"pagerduty_incident_log":      tablePagerDutyIncidentLog(ctx),
 			"pagerduty_priority":          tablePagerDutyPriority(ctx),
 			"pagerduty_ruleset":           tablePagerDutyRuleset(ctx),
