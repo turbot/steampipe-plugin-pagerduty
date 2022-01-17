@@ -8,6 +8,22 @@ The `pagerduty_incident_log` table can be used to query log entries for ANY inci
 
 ## Examples
 
+### List log entries for all incident in last 24 hrs
+
+```sql
+select
+  i.summary as incident_summary,
+  l.id as log_entry_id,
+  l.created_at,
+  l.agent ->> 'summary' as created_by
+from
+  pagerduty_incident_log as l,
+  pagerduty_incident as i
+where
+  l.incident_id = i.id
+  and l.created_at > now() - interval '24 hrs';
+```
+
 ### List incident logs for an incident from the last 3 days
 
 ```sql
