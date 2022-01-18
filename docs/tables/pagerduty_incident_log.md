@@ -52,7 +52,6 @@ from
   pagerduty_incident_log
 where
   incident_id = 'Q0FH5K82AJ101C'
-  and created_at > now() - interval '3 days'
   and agent ->> 'type' = 'user_reference';
 ```
 
@@ -69,6 +68,5 @@ from
   pagerduty_incident_log
 where
   incident_id = 'Q0FH5K82AJ101C'
-  and created_at > now() - interval '3 days'
   and agent ->> 'type' = 'service_reference';
 ```
