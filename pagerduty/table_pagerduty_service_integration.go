@@ -17,11 +17,12 @@ func tablePagerDutyServiceIntegration(_ context.Context) *plugin.Table {
 		Name:        "pagerduty_service_integration",
 		Description: "A service integration is an integration that belongs to a Pagerduty service.",
 		List: &plugin.ListConfig{
-			Hydrate: listPagerDutyServiceIntegrations,
+			ParentHydrate: listPagerDutyServices,
+			Hydrate:       listPagerDutyServiceIntegrations,
 			KeyColumns: []*plugin.KeyColumn{
 				{
 					Name:    "service_id",
-					Require: plugin.Required,
+					Require: plugin.Optional,
 				},
 			},
 		},
@@ -45,7 +46,7 @@ func tablePagerDutyServiceIntegration(_ context.Context) *plugin.Table {
 				Name:        "service_id",
 				Description: "An unique identifier of the queried service.",
 				Type:        proto.ColumnType_STRING,
-				Transform:   transform.FromQual("service_id"),
+				Transform:   transform.FromField("Service.ID"),
 			},
 			{
 				Name:        "created_at",
@@ -107,37 +108,21 @@ func tablePagerDutyServiceIntegration(_ context.Context) *plugin.Table {
 
 //// LIST FUNCTION
 
-func listPagerDutyServiceIntegrations(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
-	// Create client
-	client, err := getSessionConfig(ctx, d)
-	if err != nil {
-		plugin.Logger(ctx).Error("pagerduty_service_integration.listPagerDutyServiceIntegrations", "connection_error", err)
-		return nil, err
+func listPagerDutyServiceIntegrations(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+	// Get service details
+	serviceData := h.Item.(pagerduty.Service)
+
+	// Return if the service doesn't match with the specified one
+	if d.KeyColumnQuals["service_id"] != nil && d.KeyColumnQuals["service_id"].GetStringValue() != serviceData.ID {
+		return nil, nil
 	}
 
-	req := pagerduty.ListServiceOptions{
-		Includes: []string{"integrations"},
-	}
+	for _, integration := range serviceData.Integrations {
+		d.StreamListItem(ctx, integration)
 
-	resp, err := client.ListServicesPaginated(ctx, req)
-	if err != nil {
-		plugin.Logger(ctx).Error("pagerduty_service_integration.listPagerDutyServiceIntegrations", "query_error", err)
-		return nil, err
-	}
-
-	for _, service := range resp {
-		givenServiceID := d.KeyColumnQuals["service_id"].GetStringValue()
-		if givenServiceID != service.ID {
-			continue
-		}
-
-		for _, integration := range service.Integrations {
-			d.StreamListItem(ctx, integration)
-
-			// Context can be cancelled due to manual cancellation or the limit has been hit
-			if d.QueryStatus.RowsRemaining(ctx) == 0 {
-				return nil, nil
-			}
+		// Context can be cancelled due to manual cancellation or the limit has been hit
+		if d.QueryStatus.RowsRemaining(ctx) == 0 {
+			return nil, nil
 		}
 	}
 

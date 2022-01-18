@@ -14,9 +14,7 @@ select
   created_at,
   jsonb_pretty(vendor) as vendor
 from
-  pagerduty_service_integration
-where
-  service_id = 'PLIVVDM';
+  pagerduty_service_integration;
 ```
 
 ### List all vendor specific integrations of a service
@@ -31,6 +29,5 @@ select
 from
   pagerduty_service_integration
 where
-  service_id = 'PLIVVDM'
-  and vendor is not null;
+  vendor is not null;
 ```

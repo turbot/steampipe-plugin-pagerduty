@@ -154,7 +154,9 @@ func listPagerDutyServices(ctx context.Context, d *plugin.QueryData, _ *plugin.H
 		return nil, err
 	}
 
-	req := pagerduty.ListServiceOptions{}
+	req := pagerduty.ListServiceOptions{
+		Includes: []string{"integrations"}, // required, since integration table using this function
+	}
 
 	// Additional Filters
 	if d.KeyColumnQuals["name"] != nil {
@@ -235,7 +237,6 @@ func buildServiceRequestFields(ctx context.Context, queryColumns []string) []str
 		case "escalation_policy":
 			fields = append(fields, "escalation_policies")
 		case "teams":
-		case "integrations":
 			fields = append(fields, columnName)
 		}
 	}
