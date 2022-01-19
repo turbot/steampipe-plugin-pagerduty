@@ -154,7 +154,9 @@ func listPagerDutyServices(ctx context.Context, d *plugin.QueryData, _ *plugin.H
 		return nil, err
 	}
 
-	req := pagerduty.ListServiceOptions{}
+	req := pagerduty.ListServiceOptions{
+		Includes: []string{"integrations"}, // required, since integration table using this function
+	}
 
 	// Additional Filters
 	if d.KeyColumnQuals["name"] != nil {
@@ -172,6 +174,14 @@ func listPagerDutyServices(ctx context.Context, d *plugin.QueryData, _ *plugin.H
 		}
 	}
 	req.APIListObject.Limit = maxResult
+
+	// Check for additional models to include in response
+	// for example, escalation_policy, integrations, teams
+	givenColumns := d.QueryContext.Columns
+	includeFields := buildServiceRequestFields(ctx, givenColumns)
+	if len(includeFields) > 0 {
+		req.Includes = includeFields
+	}
 
 	resp, err := client.ListServicesPaginated(ctx, req)
 	if err != nil {
@@ -218,4 +228,17 @@ func getPagerDutyService(ctx context.Context, d *plugin.QueryData, h *plugin.Hyd
 	}
 
 	return *data, nil
+}
+
+func buildServiceRequestFields(ctx context.Context, queryColumns []string) []string {
+	var fields []string
+	for _, columnName := range queryColumns {
+		switch columnName {
+		case "escalation_policy":
+			fields = append(fields, "escalation_policies")
+		case "teams":
+			fields = append(fields, columnName)
+		}
+	}
+	return fields
 }
