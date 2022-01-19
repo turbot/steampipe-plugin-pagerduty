@@ -2,11 +2,11 @@
 
 A PagerDuty vendor represents a specific type of integration, e.g., AWS Cloudwatch, Splunk, Datadog.
 
-**Note:** It is recommended that queries specify `name` or `id` in order to limit results and produce faster queries.
+**Note:** It is recommended that queries specify `name` or `id` in order to limit results due to the large number of vendors.
 
 ## Examples
 
-### List vendor for AWS CloudWatch integration
+### Get AWS CloudWatch integration vendor
 
 ```sql
 select
@@ -21,7 +21,7 @@ where
   name = 'Amazon CloudWatch';
 ```
 
-### Get count of services using AWS CloudTrail integrations
+### Get count of services using AWS CloudTrail integration
 
 ```sql
 with cloudtrail_vendor as (
