@@ -4,7 +4,7 @@ Retrieves the log entries for the specified incident.
 
 The `pagerduty_incident_log` table can be used to query log entries for ANY incident, and **you must specify the incident ID** in the where or join clause (`where incident_id=`, `join pagerduty_incident_log on incident_id=`).
 
-**Note:** It is recommended that queries to this table should include `created_at` column (usually in the `where` clause) to filter the log entries within a specific range.
+**Note:** It is recommended that queries to this table should specify the `created_at` column (usually in the `where` clause) to filter the log entries within a specific range.
 
 ## Examples
 
