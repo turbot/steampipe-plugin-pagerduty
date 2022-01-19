@@ -32,6 +32,7 @@ func Plugin(ctx context.Context) *plugin.Plugin {
 			"pagerduty_tag":                 tablePagerDutyTag(ctx),
 			"pagerduty_team":                tablePagerDutyTeam(ctx),
 			"pagerduty_user":                tablePagerDutyUser(ctx),
+			"pagerduty_vendor":              tablePagerDutyVendor(ctx),
 		},
 	}
 
