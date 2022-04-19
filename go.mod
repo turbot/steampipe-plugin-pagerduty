@@ -1,6 +1,6 @@
 module github.com/turbot/steampipe-plugin-pagerduty
 
-go 1.17
+go 1.18
 
 require (
 	github.com/PagerDuty/go-pagerduty v1.4.3
