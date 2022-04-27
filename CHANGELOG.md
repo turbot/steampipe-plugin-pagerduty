@@ -1,3 +1,10 @@
+## v0.1.0 [2022-04-27]
+
+_Enhancements_
+
+- Recompiled plugin with [steampipe-plugin-sdk v3.1.0](https://github.com/turbot/steampipe-plugin-sdk/blob/main/CHANGELOG.md#v310--2022-03-30) and Go version `1.18`. ([#12](https://github.com/turbot/steampipe-plugin-pagerduty/pull/12))
+- Added support for native Linux ARM and Mac M1 builds. ([#13](https://github.com/turbot/steampipe-plugin-pagerduty/pull/13))
+
 ## v0.0.2 [2022-01-19]
 
 _What's new?_
