@@ -6,7 +6,7 @@ import (
 	"os"
 
 	"github.com/PagerDuty/go-pagerduty"
-	"github.com/turbot/steampipe-plugin-sdk/plugin"
+	"github.com/turbot/steampipe-plugin-sdk/v3/plugin"
 )
 
 // getSessionConfig :: returns PagerDuty client to perform API requests
