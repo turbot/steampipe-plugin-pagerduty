@@ -11,9 +11,9 @@ import (
 
 //// TABLE DEFINITION
 
-func tablePagerDutyOnCalls(_ context.Context) *plugin.Table {
+func tablePagerDutyOnCall(_ context.Context) *plugin.Table {
 	return &plugin.Table{
-		Name:        "pagerduty_oncalls",
+		Name:        "pagerduty_on_call",
 		Description: "An on-call represents a contiguous unit of time for which a User will be on call for a given Escalation Policy and Escalation Rules.",
 		List: &plugin.ListConfig{
 			Hydrate: listPagerDutyOnCalls,
@@ -59,7 +59,7 @@ func listPagerDutyOnCalls(ctx context.Context, d *plugin.QueryData, h *plugin.Hy
 	// Create client
 	client, err := getSessionConfig(ctx, d)
 	if err != nil {
-		plugin.Logger(ctx).Error("pagerduty_oncalls.listPagerDutyOnCalls", "connection_error", err)
+		plugin.Logger(ctx).Error("pagerduty_on_call.listPagerDutyOnCalls", "connection_error", err)
 		return nil, err
 	}
 
@@ -72,7 +72,7 @@ func listPagerDutyOnCalls(ctx context.Context, d *plugin.QueryData, h *plugin.Hy
 		if isNotFoundError(err) {
 			return nil, nil
 		}
-		plugin.Logger(ctx).Error("pagerduty_oncalls.listPagerDutyOnCalls", "query_error", err)
+		plugin.Logger(ctx).Error("pagerduty_on_call.listPagerDutyOnCalls", "query_error", err)
 		return nil, err
 	}
 	resp := listResponse.(*pagerduty.ListOnCallsResponse)

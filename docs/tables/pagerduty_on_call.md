@@ -1,4 +1,4 @@
-# Table: pagerduty_oncalls
+# Table: pagerduty_on_call
 
 An on-call represents a contiguous unit of time for which a User will be on call for a given Escalation Policy and Escalation Rules.
 
@@ -15,7 +15,7 @@ select
   "start",
   "end"
 from
-  pagerduty_oncalls;
+  pagerduty_on_call;
 ```
 
 ### Get the current on call user's name for a given schedule name
@@ -24,7 +24,7 @@ from
 select
   "user" ->> 'summary' as "User"
 from
-  pagerduty_oncalls
+  pagerduty_on_call
 where
   schedule ->> 'summary' = 'Schedule Name'
 ```
