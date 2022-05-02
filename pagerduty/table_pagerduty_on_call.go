@@ -20,21 +20,6 @@ func tablePagerDutyOnCall(_ context.Context) *plugin.Table {
 		},
 		Columns: []*plugin.Column{
 			{
-				Name:        "escalation_policy",
-				Description: "The escalation_policy object.",
-				Type:        proto.ColumnType_JSON,
-			},
-			{
-				Name:        "user",
-				Description: "The user object.",
-				Type:        proto.ColumnType_JSON,
-			},
-			{
-				Name:        "schedule",
-				Description: "The schedule object.",
-				Type:        proto.ColumnType_JSON,
-			},
-			{
 				Name:        "escalation_level",
 				Description: "The escalation level for the on-call.",
 				Type:        proto.ColumnType_INT,
@@ -48,6 +33,21 @@ func tablePagerDutyOnCall(_ context.Context) *plugin.Table {
 				Name:        "end",
 				Description: "The end of the on-call. If null, the user does not go off-call.",
 				Type:        proto.ColumnType_TIMESTAMP,
+			},
+			{
+				Name:        "escalation_policy",
+				Description: "The escalation_policy object.",
+				Type:        proto.ColumnType_JSON,
+			},
+			{
+				Name:        "schedule",
+				Description: "The schedule object.",
+				Type:        proto.ColumnType_JSON,
+			},
+			{
+				Name:        "user",
+				Description: "The user object.",
+				Type:        proto.ColumnType_JSON,
 			},
 		},
 	}
@@ -63,27 +63,48 @@ func listPagerDutyOnCalls(ctx context.Context, d *plugin.QueryData, h *plugin.Hy
 		return nil, err
 	}
 
+	req := pagerduty.ListOnCallOptions{}
+
+	// Retrieve the list of on calls
+	maxResult := uint(100)
+
+	// Reduce the basic request limit down if the user has only requested a small number of rows
+	limit := d.QueryContext.Limit
+	if d.QueryContext.Limit != nil {
+		if uint(*limit) < maxResult {
+			maxResult = uint(*limit)
+		}
+	}
+	req.APIListObject.Limit = maxResult
+
 	listPage := func(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
-		data, err := client.ListOnCallsWithContext(ctx, pagerduty.ListOnCallOptions{})
+		data, err := client.ListOnCallsWithContext(ctx, req)
 		return data, err
 	}
-	listResponse, err := plugin.RetryHydrate(ctx, d, h, listPage, &plugin.RetryConfig{ShouldRetryError: shouldRetryError})
-	if err != nil {
-		if isNotFoundError(err) {
-			return nil, nil
+	for {
+		listResponse, err := plugin.RetryHydrate(ctx, d, h, listPage, &plugin.RetryConfig{ShouldRetryError: shouldRetryError})
+		if err != nil {
+			if isNotFoundError(err) {
+				return nil, nil
+			}
+			plugin.Logger(ctx).Error("pagerduty_on_call.listPagerDutyOnCalls", "query_error", err)
+			return nil, err
 		}
-		plugin.Logger(ctx).Error("pagerduty_on_call.listPagerDutyOnCalls", "query_error", err)
-		return nil, err
-	}
-	resp := listResponse.(*pagerduty.ListOnCallsResponse)
+		resp := listResponse.(*pagerduty.ListOnCallsResponse)
 
-	for _, oncall := range resp.OnCalls {
-		d.StreamListItem(ctx, oncall)
+		for _, oncall := range resp.OnCalls {
+			d.StreamListItem(ctx, oncall)
 
-		// Context can be cancelled due to manual cancellation or the limit has been hit
-		if d.QueryStatus.RowsRemaining(ctx) == 0 {
-			return nil, nil
+			// Context can be cancelled due to manual cancellation or the limit has been hit
+			if d.QueryStatus.RowsRemaining(ctx) == 0 {
+				return nil, nil
+			}
 		}
+
+		if !listResponse.APIListObject.More {
+			break
+		}
+		req.APIListObject.Offset = listResponse.Offset + 1
 	}
 
 	return nil, nil

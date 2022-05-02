@@ -26,5 +26,5 @@ select
 from
   pagerduty_on_call
 where
-  schedule ->> 'summary' = 'Schedule Name'
+  schedule ->> 'summary' = 'Schedule Name';
 ```
