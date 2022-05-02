@@ -8,12 +8,12 @@ An on-call represents a contiguous unit of time for which a User will be on call
 
 ```sql
 select
-  escalation_policy,
+  "escalation_policy",
   "user",
-  schedule,
-  escalation_level,
-  start,
-  end
+  "schedule",
+  "escalation_level",
+  "start",
+  "end"
 from
   pagerduty_oncalls;
 ```
