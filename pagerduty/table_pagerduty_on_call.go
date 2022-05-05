@@ -82,7 +82,7 @@ func listPagerDutyOnCalls(ctx context.Context, d *plugin.QueryData, h *plugin.Hy
 		return data, err
 	}
 	for {
-		listResponse, err := plugin.RetryHydrate(ctx, d, h, listPage, &plugin.RetryConfig{ShouldRetryError: shouldRetryError})
+		listPageResponse, err := plugin.RetryHydrate(ctx, d, h, listPage, &plugin.RetryConfig{ShouldRetryError: shouldRetryError})
 		if err != nil {
 			if isNotFoundError(err) {
 				return nil, nil
@@ -90,9 +90,9 @@ func listPagerDutyOnCalls(ctx context.Context, d *plugin.QueryData, h *plugin.Hy
 			plugin.Logger(ctx).Error("pagerduty_on_call.listPagerDutyOnCalls", "query_error", err)
 			return nil, err
 		}
-		resp := listResponse.(*pagerduty.ListOnCallsResponse)
+		listResponse := listPageResponse.(*pagerduty.ListOnCallsResponse)
 
-		for _, oncall := range resp.OnCalls {
+		for _, oncall := range listResponse.OnCalls {
 			d.StreamListItem(ctx, oncall)
 
 			// Context can be cancelled due to manual cancellation or the limit has been hit
