@@ -193,7 +193,7 @@ func listPagerDutyIncidentLogs(ctx context.Context, d *plugin.QueryData, h *plug
 		if !listResponse.APIListObject.More {
 			break
 		}
-		req.APIListObject.Offset = listResponse.Offset + 1
+		req.APIListObject.Offset = listResponse.APIListObject.Offset + listResponse.APIListObject.Limit
 	}
 
 	return nil, nil
