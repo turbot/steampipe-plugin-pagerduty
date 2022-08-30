@@ -2,7 +2,7 @@ name: Sync Labels
 on:
   push:
     branches:
-      # TODO: Remove after testing
+      # TODO: Remove after testingg
       - update-stale-workflow-reusable
   schedule:
     - cron: "30 22 * * *"
