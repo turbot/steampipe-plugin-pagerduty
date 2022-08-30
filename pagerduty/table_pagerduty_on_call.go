@@ -5,8 +5,9 @@ import (
 
 	"github.com/PagerDuty/go-pagerduty"
 
-	"github.com/turbot/steampipe-plugin-sdk/v3/grpc/proto"
-	"github.com/turbot/steampipe-plugin-sdk/v3/plugin"
+	"github.com/turbot/steampipe-plugin-sdk/v4/grpc/proto"
+	"github.com/turbot/steampipe-plugin-sdk/v4/plugin"
+	"github.com/turbot/steampipe-plugin-sdk/v4/plugin/transform"
 )
 
 //// TABLE DEFINITION
@@ -45,9 +46,10 @@ func tablePagerDutyOnCall(_ context.Context) *plugin.Table {
 				Type:        proto.ColumnType_JSON,
 			},
 			{
-				Name:        "user",
+				Name:        "user_on_call",
 				Description: "The user object.",
 				Type:        proto.ColumnType_JSON,
+				Transform:   transform.FromField("User"),
 			},
 		},
 	}
@@ -104,7 +106,7 @@ func listPagerDutyOnCalls(ctx context.Context, d *plugin.QueryData, h *plugin.Hy
 		if !listResponse.APIListObject.More {
 			break
 		}
-		req.APIListObject.Offset = listResponse.Offset + 1
+		req.APIListObject.Offset = listResponse.APIListObject.Offset + listResponse.APIListObject.Limit
 	}
 
 	return nil, nil
