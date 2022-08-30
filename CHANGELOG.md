@@ -1,3 +1,20 @@
+## v0.2.0 [2022-08-30]
+
+_What's new?_
+
+- New tables added
+  - [pagerduty_on_call](https://hub.steampipe.io/plugins/turbot/pagerduty/tables/pagerduty_on_call) ([#15](https://github.com/turbot/steampipe-plugin-pagerduty/pull/15)) (Thanks to [@coop182](https://github.com/coop182) for the contribution!)
+
+_Bug fixes_
+
+- Fixed offset calculation in all tables' list functions' paging. ([#19](https://github.com/turbot/steampipe-plugin-pagerduty/pull/19)) (Thanks to [@janritter](https://github.com/janritter) for the contribution!)
+- Fixed `title` column in `pagerduty_incident` and `pagerduty_incident_log` tables. ([#23](https://github.com/turbot/steampipe-plugin-pagerduty/pull/23))
+
+_Dependencies_
+
+- Recompiled plugin with [steampipe-plugin-sdk v4.1.4](https://github.com/turbot/steampipe-plugin-sdk/blob/main/CHANGELOG.md#v414-2022-08-26) which includes several caching and memory management improvements. ([#20](https://github.com/turbot/steampipe-plugin-pagerduty/pull/20))
+- Recompiled plugin with Go version `1.19`. ([#20](https://github.com/turbot/steampipe-plugin-pagerduty/pull/20))
+
 ## v0.1.0 [2022-04-27]
 
 _Enhancements_
@@ -20,7 +37,6 @@ _What's new?_
 _What's new?_
 
 - New tables added
-
   - [pagerduty_escalation_policy](https://hub.steampipe.io/plugins/turbot/pagerduty/tables/pagerduty_escalation_policy)
   - [pagerduty_priority](https://hub.steampipe.io/plugins/turbot/pagerduty/tables/pagerduty_priority)
   - [pagerduty_ruleset](https://hub.steampipe.io/plugins/turbot/pagerduty/tables/pagerduty_ruleset)
