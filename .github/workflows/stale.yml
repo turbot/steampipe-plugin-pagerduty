@@ -8,7 +8,7 @@ on:
     - cron: "30 23 * * *"
   workflow_dispatch:
     inputs:
-      debugOnly:
+      dryRun:
         description: Set to true for a dry run
         required: false
         default: "false"
