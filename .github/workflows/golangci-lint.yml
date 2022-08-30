@@ -5,6 +5,8 @@ on:
       - v*
     branches:
       - main
+      # TODO: Remove after testing
+      - update-stale-workflow-reusable
   pull_request:
 
 jobs:
