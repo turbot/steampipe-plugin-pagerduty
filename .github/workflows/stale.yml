@@ -15,7 +15,7 @@ on:
         type: string
 
 jobs:
-  stale:
+  stale_workflow:
     uses: turbot/steampipe-workflows/.github/workflows/stale.yml@main
     with:
-      debugOnly: ${{ github.event.inputs.debugOnly }}
+      dryRun: ${{ github.event.inputs.dryRun }}
