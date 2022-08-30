@@ -1,5 +1,9 @@
 name: Stale Issues and PRs
 on:
+  push:
+    branches:
+      # TODO: Remove after testing
+      - update-stale-workflow-reusable
   schedule:
     - cron: "30 23 * * *"
   workflow_dispatch:
