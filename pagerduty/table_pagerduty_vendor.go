@@ -5,9 +5,9 @@ import (
 
 	"github.com/PagerDuty/go-pagerduty"
 
-	"github.com/turbot/steampipe-plugin-sdk/v4/grpc/proto"
-	"github.com/turbot/steampipe-plugin-sdk/v4/plugin"
-	"github.com/turbot/steampipe-plugin-sdk/v4/plugin/transform"
+	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
+	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
+	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/transform"
 )
 
 //// TABLE DEFINITION
@@ -142,8 +142,8 @@ func listPagerDutyVendors(ctx context.Context, d *plugin.QueryData, h *plugin.Hy
 	req := pagerduty.ListVendorOptions{}
 
 	// Additional Filters
-	if d.KeyColumnQuals["name"] != nil {
-		req.Query = d.KeyColumnQuals["name"].GetStringValue()
+	if d.EqualsQuals["name"] != nil {
+		req.Query = d.EqualsQuals["name"].GetStringValue()
 	}
 
 	// Retrieve the list of vendors
@@ -174,7 +174,7 @@ func listPagerDutyVendors(ctx context.Context, d *plugin.QueryData, h *plugin.Hy
 			d.StreamListItem(ctx, vendor)
 
 			// Context can be cancelled due to manual cancellation or the limit has been hit
-			if d.QueryStatus.RowsRemaining(ctx) == 0 {
+			if d.RowsRemaining(ctx) == 0 {
 				return nil, nil
 			}
 		}
@@ -197,7 +197,7 @@ func getPagerDutyVendor(ctx context.Context, d *plugin.QueryData, h *plugin.Hydr
 		plugin.Logger(ctx).Error("pagerduty_vendor.getPagerDutyVendor", "connection_error", err)
 		return nil, err
 	}
-	id := d.KeyColumnQuals["id"].GetStringValue()
+	id := d.EqualsQuals["id"].GetStringValue()
 
 	// No inputs
 	if id == "" {

@@ -6,9 +6,9 @@ import (
 
 	"github.com/PagerDuty/go-pagerduty"
 
-	"github.com/turbot/steampipe-plugin-sdk/v4/grpc/proto"
-	"github.com/turbot/steampipe-plugin-sdk/v4/plugin"
-	"github.com/turbot/steampipe-plugin-sdk/v4/plugin/transform"
+	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
+	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
+	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/transform"
 )
 
 //// TABLE DEFINITION
@@ -200,14 +200,14 @@ func listPagerDutyIncidents(ctx context.Context, d *plugin.QueryData, h *plugin.
 	req := pagerduty.ListIncidentsOptions{}
 
 	// Additional Filters
-	if d.KeyColumnQuals["incident_key"] != nil {
-		req.IncidentKey = d.KeyColumnQuals["incident_key"].GetStringValue()
+	if d.EqualsQuals["incident_key"] != nil {
+		req.IncidentKey = d.EqualsQuals["incident_key"].GetStringValue()
 	}
-	if d.KeyColumnQuals["status"] != nil {
-		req.Statuses = []string{d.KeyColumnQuals["status"].GetStringValue()}
+	if d.EqualsQuals["status"] != nil {
+		req.Statuses = []string{d.EqualsQuals["status"].GetStringValue()}
 	}
-	if d.KeyColumnQuals["urgency"] != nil {
-		req.Urgencies = []string{d.KeyColumnQuals["urgency"].GetStringValue()}
+	if d.EqualsQuals["urgency"] != nil {
+		req.Urgencies = []string{d.EqualsQuals["urgency"].GetStringValue()}
 	}
 
 	quals := d.Quals
@@ -270,7 +270,7 @@ func listPagerDutyIncidents(ctx context.Context, d *plugin.QueryData, h *plugin.
 			d.StreamListItem(ctx, incident)
 
 			// Context can be cancelled due to manual cancellation or the limit has been hit
-			if d.QueryStatus.RowsRemaining(ctx) == 0 {
+			if d.RowsRemaining(ctx) == 0 {
 				return nil, nil
 			}
 		}
@@ -294,7 +294,7 @@ func getPagerDutyIncident(ctx context.Context, d *plugin.QueryData, h *plugin.Hy
 		plugin.Logger(ctx).Error("pagerduty_incident.getPagerDutyIncident", "connection_error", err)
 		return nil, err
 	}
-	id := d.KeyColumnQuals["id"].GetStringValue()
+	id := d.EqualsQuals["id"].GetStringValue()
 
 	// No inputs
 	if id == "" {
