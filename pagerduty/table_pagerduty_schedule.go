@@ -5,9 +5,9 @@ import (
 
 	"github.com/PagerDuty/go-pagerduty"
 
-	"github.com/turbot/steampipe-plugin-sdk/v4/grpc/proto"
-	"github.com/turbot/steampipe-plugin-sdk/v4/plugin"
-	"github.com/turbot/steampipe-plugin-sdk/v4/plugin/transform"
+	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
+	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
+	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/transform"
 )
 
 //// TABLE DEFINITION
@@ -132,8 +132,8 @@ func listPagerDutySchedules(ctx context.Context, d *plugin.QueryData, h *plugin.
 	req := pagerduty.ListSchedulesOptions{}
 
 	// Additional Filters
-	if d.KeyColumnQuals["name"] != nil {
-		req.Query = d.KeyColumnQuals["name"].GetStringValue()
+	if d.EqualsQuals["name"] != nil {
+		req.Query = d.EqualsQuals["name"].GetStringValue()
 	}
 
 	// Retrieve the list of schedules
@@ -164,7 +164,7 @@ func listPagerDutySchedules(ctx context.Context, d *plugin.QueryData, h *plugin.
 			d.StreamListItem(ctx, schedule)
 
 			// Context can be cancelled due to manual cancellation or the limit has been hit
-			if d.QueryStatus.RowsRemaining(ctx) == 0 {
+			if d.RowsRemaining(ctx) == 0 {
 				return nil, nil
 			}
 		}
@@ -192,7 +192,7 @@ func getPagerDutySchedule(ctx context.Context, d *plugin.QueryData, h *plugin.Hy
 	if h.Item != nil {
 		id = h.Item.(pagerduty.Schedule).ID
 	} else {
-		id = d.KeyColumnQuals["id"].GetStringValue()
+		id = d.EqualsQuals["id"].GetStringValue()
 	}
 
 	// No inputs

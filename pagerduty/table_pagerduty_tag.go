@@ -5,9 +5,9 @@ import (
 
 	"github.com/PagerDuty/go-pagerduty"
 
-	"github.com/turbot/steampipe-plugin-sdk/v4/grpc/proto"
-	"github.com/turbot/steampipe-plugin-sdk/v4/plugin"
-	"github.com/turbot/steampipe-plugin-sdk/v4/plugin/transform"
+	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
+	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
+	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/transform"
 )
 
 //// TABLE DEFINITION
@@ -83,8 +83,8 @@ func listPagerDutyTags(ctx context.Context, d *plugin.QueryData, h *plugin.Hydra
 	req := pagerduty.ListTagOptions{}
 
 	// Additional Filters
-	if d.KeyColumnQuals["label"] != nil {
-		req.Query = d.KeyColumnQuals["label"].GetStringValue()
+	if d.EqualsQuals["label"] != nil {
+		req.Query = d.EqualsQuals["label"].GetStringValue()
 	}
 
 	// Retrieve the list of tags
@@ -114,7 +114,7 @@ func listPagerDutyTags(ctx context.Context, d *plugin.QueryData, h *plugin.Hydra
 		d.StreamListItem(ctx, tag)
 
 		// Context can be cancelled due to manual cancellation or the limit has been hit
-		if d.QueryStatus.RowsRemaining(ctx) == 0 {
+		if d.RowsRemaining(ctx) == 0 {
 			return nil, nil
 		}
 	}

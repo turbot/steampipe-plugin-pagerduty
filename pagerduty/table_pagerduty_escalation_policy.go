@@ -5,9 +5,9 @@ import (
 
 	"github.com/PagerDuty/go-pagerduty"
 
-	"github.com/turbot/steampipe-plugin-sdk/v4/grpc/proto"
-	"github.com/turbot/steampipe-plugin-sdk/v4/plugin"
-	"github.com/turbot/steampipe-plugin-sdk/v4/plugin/transform"
+	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
+	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
+	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/transform"
 )
 
 //// TABLE DEFINITION
@@ -119,8 +119,8 @@ func listPagerDutyEscalationPolicies(ctx context.Context, d *plugin.QueryData, h
 	req := pagerduty.ListEscalationPoliciesOptions{}
 
 	// Additional Filters
-	if d.KeyColumnQuals["name"] != nil {
-		req.Query = d.KeyColumnQuals["name"].GetStringValue()
+	if d.EqualsQuals["name"] != nil {
+		req.Query = d.EqualsQuals["name"].GetStringValue()
 	}
 
 	// Retrieve the list of policies
@@ -151,7 +151,7 @@ func listPagerDutyEscalationPolicies(ctx context.Context, d *plugin.QueryData, h
 			d.StreamListItem(ctx, policy)
 
 			// Context can be cancelled due to manual cancellation or the limit has been hit
-			if d.QueryStatus.RowsRemaining(ctx) == 0 {
+			if d.RowsRemaining(ctx) == 0 {
 				return nil, nil
 			}
 		}
@@ -174,7 +174,7 @@ func getPagerDutyEscalationPolicy(ctx context.Context, d *plugin.QueryData, h *p
 		plugin.Logger(ctx).Error("pagerduty_escalation_policy.getPagerDutyEscalationPolicy", "connection_error", err)
 		return nil, err
 	}
-	id := d.KeyColumnQuals["id"].GetStringValue()
+	id := d.EqualsQuals["id"].GetStringValue()
 
 	// No inputs
 	if id == "" {

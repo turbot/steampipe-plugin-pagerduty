@@ -5,9 +5,9 @@ import (
 
 	"github.com/PagerDuty/go-pagerduty"
 
-	"github.com/turbot/steampipe-plugin-sdk/v4/grpc/proto"
-	"github.com/turbot/steampipe-plugin-sdk/v4/plugin"
-	"github.com/turbot/steampipe-plugin-sdk/v4/plugin/transform"
+	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
+	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
+	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/transform"
 )
 
 //// TABLE DEFINITION
@@ -113,7 +113,7 @@ func listPagerDutyServiceIntegrations(ctx context.Context, d *plugin.QueryData, 
 	serviceData := h.Item.(pagerduty.Service)
 
 	// Return if the service doesn't match with the specified one
-	if d.KeyColumnQuals["service_id"] != nil && d.KeyColumnQuals["service_id"].GetStringValue() != serviceData.ID {
+	if d.EqualsQuals["service_id"] != nil && d.EqualsQuals["service_id"].GetStringValue() != serviceData.ID {
 		return nil, nil
 	}
 
@@ -121,7 +121,7 @@ func listPagerDutyServiceIntegrations(ctx context.Context, d *plugin.QueryData, 
 		d.StreamListItem(ctx, integration)
 
 		// Context can be cancelled due to manual cancellation or the limit has been hit
-		if d.QueryStatus.RowsRemaining(ctx) == 0 {
+		if d.RowsRemaining(ctx) == 0 {
 			return nil, nil
 		}
 	}
@@ -138,8 +138,8 @@ func getPagerDutyServiceIntegration(ctx context.Context, d *plugin.QueryData, _ 
 		plugin.Logger(ctx).Error("pagerduty_service_integration.getPagerDutyServiceIntegration", "connection_error", err)
 		return nil, err
 	}
-	serviceID := d.KeyColumnQuals["service_id"].GetStringValue()
-	id := d.KeyColumnQuals["id"].GetStringValue()
+	serviceID := d.EqualsQuals["service_id"].GetStringValue()
+	id := d.EqualsQuals["id"].GetStringValue()
 
 	// No inputs
 	if id == "" || serviceID == "" {
