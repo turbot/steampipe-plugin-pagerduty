@@ -3,7 +3,7 @@ module github.com/turbot/steampipe-plugin-pagerduty
 go 1.21
 
 require (
-	github.com/PagerDuty/go-pagerduty v1.4.3
+	github.com/PagerDuty/go-pagerduty v1.7.0
 	github.com/turbot/steampipe-plugin-sdk/v5 v5.6.2
 )
 
