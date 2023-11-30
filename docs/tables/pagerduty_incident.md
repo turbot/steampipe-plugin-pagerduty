@@ -1,12 +1,20 @@
-# Table: pagerduty_incident
+---
+title: "Steampipe Table: pagerduty_incident - Query PagerDuty Incidents using SQL"
+description: "Allows users to query PagerDuty Incidents, providing comprehensive details about each incident such as status, urgency, and assigned services."
+---
 
-An incident represents a problem or an issue that needs to be addressed and resolved.
+# Table: pagerduty_incident - Query PagerDuty Incidents using SQL
 
-**Note:** If no `created_at` key qual is specified, incidents from the last 30 days will be returned by default.
+PagerDuty Incident Management is a digital operations management platform that combines machine data with human data to improve visibility and agility across organizations. It helps teams to minimize business disruptions and improve the customer experience by providing real-time alerts and incident tracking. PagerDuty Incident Management allows organizations to manage incidents from any source, and it's trusted by thousands of organizations globally to improve their incident response.
+
+## Table Usage Guide
+
+The `pagerduty_incident` table provides detailed insights into incidents managed through the PagerDuty platform. As an Operations or DevOps engineer, explore incident-specific details through this table, including current status, associated services, and urgency level. Utilize it to track and manage incidents, understand their impact, and plan for timely resolution.
 
 ## Examples
 
 ### List unacknowledged incidents for the last 30 days
+Explore the recent incidents that have not been addressed in the past month. This is beneficial for prioritizing urgent tasks and understanding the backlog of unresolved issues.
 
 ```sql
 select
@@ -23,6 +31,7 @@ where
 ```
 
 ### List unacknowledged incidents with high urgency for the last 1 week
+Determine the high urgency incidents from the past week that are still pending acknowledgment. This aids in prioritizing immediate action on urgent matters that have been overlooked.
 
 ```sql
 select
@@ -40,6 +49,7 @@ where
 ```
 
 ### List unacknowledged incidents assigned to a specific user for the last 3 days
+Determine the areas in which urgent issues have not been acknowledged by a specific team member in the last three days. This helps to identify potential bottlenecks and ensures that critical incidents are addressed promptly.
 
 ```sql
 select
@@ -59,6 +69,7 @@ where
 ```
 
 ### List all unacknowledged incidents for the last 7 days
+Gain insights into all the recent incidents that have not been addressed yet, within the past week. This can help prioritize urgent matters and streamline incident response.
 
 ```sql
 select
