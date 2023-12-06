@@ -11,6 +11,9 @@ PagerDuty is an incident management platform that provides reliable incident not
 
 The `pagerduty_priority` table provides insights into the different levels of urgency that can be assigned to incidents in PagerDuty. As an Incident Manager or DevOps engineer, explore priority-specific details through this table, including the name and description of each priority level, and the time frame in which incidents at each priority level should be resolved. Utilize it to better understand and manage your team's response to incidents of varying urgency.
 
+**Important Notes**
+- To list the priorities, first [enable and configure your priorities](https://support.pagerduty.com/docs/incident-priority#section-enabling-incident-priority).
+
 ## Examples
 
 ### Basic info

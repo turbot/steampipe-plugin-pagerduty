@@ -11,6 +11,9 @@ PagerDuty is an incident management platform that provides reliable notification
 
 The `pagerduty_vendor` table provides insights into third-party services integrated with PagerDuty. As a DevOps engineer, explore vendor-specific details through this table, including vendor id, name, summary, and other relevant information. Utilize it to uncover information about vendors, such as their integration status with PagerDuty, and the services they offer.
 
+**Important Notes**
+- It is recommended that queries specify `name` or `id` in order to limit results due to the large number of vendors.
+
 ## Examples
 
 ### Get AWS CloudWatch integration vendor
@@ -59,6 +62,6 @@ from
   cloudtrail_vendor as cv
   left join service_integrations as si on cv.vendor_id = si.vendor_id
 group by
-  cv.vendor_name, 
+  cv.vendor_name,
   si.service_id;
 ```

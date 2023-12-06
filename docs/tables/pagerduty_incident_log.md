@@ -11,6 +11,10 @@ PagerDuty Incident Logs are a record of all the activities related to an inciden
 
 The `pagerduty_incident_log` table provides insights into incident logs within PagerDuty. As an incident responder or a DevOps engineer, explore the detailed timeline of incident activity through this table, including status changes, escalations, and user-added notes. Utilize it to facilitate postmortem analysis and gain a comprehensive understanding of the incident's lifecycle.
 
+**Important Notes**
+- You must specify the `incident_id` in the `where` or join clause (`where incident_id=`, `join pagerduty_incident_log l on l.incident_id=`) to query this table.
+- It is recommended that queries specify `created_at` (usually in the `where` clause) to filter the log entries within a specific time range.
+
 ## Examples
 
 ### List log entries for all incident in last 24 hrs

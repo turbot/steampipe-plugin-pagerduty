@@ -11,6 +11,9 @@ PagerDuty Escalation Policies are a crucial component of the PagerDuty incident 
 
 The `pagerduty_escalation_policy` table provides insights into Escalation Policies within PagerDuty's incident management platform. As an incident manager or DevOps engineer, explore policy-specific details through this table, including the associated teams, services, and escalation rules. Utilize it to gain a comprehensive understanding of your incident response workflow, and to ensure an effective and timely response to incidents.
 
+**Important Notes**
+- If no `created_at` key qual is specified, incidents from the last 30 days will be returned by default.
+
 ## Examples
 
 ### Basic info
