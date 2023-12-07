@@ -16,7 +16,17 @@ The `pagerduty_service` table provides insights into services within PagerDuty. 
 ### Basic info
 Explore which services are currently active on your PagerDuty account. This is useful for understanding your overall service usage and identifying any services that may be inactive or unused.
 
-```sql
+```sql+postgres
+select
+  name,
+  id,
+  status,
+  self
+from
+  pagerduty_service;
+```
+
+```sql+sqlite
 select
   name,
   id,
@@ -29,7 +39,19 @@ from
 ### List disabled services
 Uncover the details of inactive services on PagerDuty. This query is useful for maintaining system health by identifying services that are no longer in use.
 
-```sql
+```sql+postgres
+select
+  name,
+  id,
+  status,
+  self
+from
+  pagerduty_service
+where
+  status = 'disabled';
+```
+
+```sql+sqlite
 select
   name,
   id,
@@ -44,7 +66,7 @@ where
 ### List services not associated with any team
 Identify services in your PagerDuty account that are not linked to any team. This is useful for ensuring all services are properly assigned for effective incident management.
 
-```sql
+```sql+postgres
 select
   name,
   id,
@@ -54,4 +76,16 @@ from
   pagerduty_service
 where
   jsonb_array_length(teams) < 1;
+```
+
+```sql+sqlite
+select
+  name,
+  id,
+  status,
+  self
+from
+  pagerduty_service
+where
+  json_array_length(teams) < 1;
 ```

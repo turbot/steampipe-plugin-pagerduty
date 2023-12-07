@@ -16,7 +16,7 @@ The `pagerduty_service_integration` table provides insights into the integration
 ### Basic info
 Explore which PagerDuty service integrations have been created by analyzing their names, IDs, and creation dates. This can provide insights into your system's integration history and help you understand the vendor details associated with each service.
 
-```sql
+```sql+postgres
 select
   name,
   id,
@@ -27,16 +27,40 @@ from
   pagerduty_service_integration;
 ```
 
+```sql+sqlite
+select
+  name,
+  id,
+  service_id,
+  created_at,
+  vendor
+from
+  pagerduty_service_integration;
+```
+
 ### List all vendor specific integrations of a service
 Discover the segments that have specific integrations with vendors for a service. This can be useful to identify and manage third-party dependencies and assess potential risks associated with vendor-specific integrations.
 
-```sql
+```sql+postgres
 select
   name,
   id,
   service_id,
   created_at,
   vendor ->> 'summary' as vendor_name
+from
+  pagerduty_service_integration
+where
+  vendor is not null;
+```
+
+```sql+sqlite
+select
+  name,
+  id,
+  service_id,
+  created_at,
+  json_extract(vendor, '$.summary') as vendor_name
 from
   pagerduty_service_integration
 where

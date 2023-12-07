@@ -16,7 +16,16 @@ The `pagerduty_ruleset` table provides insights into the rulesets within PagerDu
 ### Basic info
 Explore the different rulesets in your PagerDuty account to understand their types and identifiers. This can help in managing and organizing your incident response workflows effectively.
 
-```sql
+```sql+postgres
+select
+  name,
+  id,
+  type
+from
+  pagerduty_ruleset;
+```
+
+```sql+sqlite
 select
   name,
   id,
@@ -28,7 +37,18 @@ from
 ### List default global rulesets
 Explore which rulesets are set as the default global rules within your PagerDuty configuration. This is useful for understanding the overarching rules that apply to all incidents, allowing for better incident management and response.
 
-```sql
+```sql+postgres
+select
+  name,
+  id,
+  type
+from
+  pagerduty_ruleset
+where
+  type = 'default_global';
+```
+
+```sql+sqlite
 select
   name,
   id,
@@ -42,7 +62,18 @@ where
 ### List rulesets not owned by any team
 Explore which rulesets in your PagerDuty configuration aren't associated with any team. This can help identify potential gaps in your incident management workflows.
 
-```sql
+```sql+postgres
+select
+  name,
+  id,
+  type
+from
+  pagerduty_ruleset
+where
+  team is null;
+```
+
+```sql+sqlite
 select
   name,
   id,
@@ -56,7 +87,17 @@ where
 ### Count event rules per ruleset
 Analyze the settings to understand the distribution of event rules across different rulesets. This can help you optimize event management by identifying rulesets with an excessive or insufficient number of rules.
 
-```sql
+```sql+postgres
+select
+  rs.id as ruleset_id,
+  count(r.id)
+from
+  pagerduty_ruleset as rs
+  left join pagerduty_ruleset_rule as r on rs.id = r.ruleset_id
+group by rs.id;
+```
+
+```sql+sqlite
 select
   rs.id as ruleset_id,
   count(r.id)

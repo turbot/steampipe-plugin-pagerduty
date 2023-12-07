@@ -16,7 +16,17 @@ The `pagerduty_schedule` table provides insights into the on-call schedules with
 ### Basic info
 Explore which PagerDuty schedules are active to understand the current allocation of resources and manage workflow more effectively. This can help in optimizing resource utilization and ensuring round-the-clock coverage.
 
-```sql
+```sql+postgres
+select
+  name,
+  id,
+  timezone,
+  self
+from
+  pagerduty_schedule;
+```
+
+```sql+sqlite
 select
   name,
   id,
@@ -29,7 +39,7 @@ from
 ### List unused schedules
 Discover the schedules that are not linked to any escalation policies. This can help in identifying and cleaning up unused resources, thereby improving the efficiency of your PagerDuty setup.
 
-```sql
+```sql+postgres
 select
   name,
   id,
@@ -41,10 +51,22 @@ where
   jsonb_array_length(escalation_policies) = 0;
 ```
 
+```sql+sqlite
+select
+  name,
+  id,
+  timezone,
+  self
+from
+  pagerduty_schedule
+where
+  json_array_length(escalation_policies) = 0;
+```
+
 ### List schedules not assigned to any team
 Discover the schedules that are not assigned to any team, helping to identify potential scheduling gaps or unallocated resources within your PagerDuty configuration.
 
-```sql
+```sql+postgres
 select
   name,
   id,
@@ -54,4 +76,16 @@ from
   pagerduty_schedule
 where
   jsonb_array_length(teams) = 0;
+```
+
+```sql+sqlite
+select
+  name,
+  id,
+  timezone,
+  self
+from
+  pagerduty_schedule
+where
+  json_array_length(teams) = 0;
 ```

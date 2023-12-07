@@ -16,7 +16,19 @@ The `pagerduty_on_call` table provides insights into on-call schedules within Pa
 ### Basic info
 Explore which users are currently on call and the associated escalation policies and schedules. This can help in understanding the current on-call management setup and in planning future on-call schedules.
 
-```sql
+```sql+postgres
+select
+  escalation_policy,
+  user_on_call,
+  schedule,
+  escalation_level,
+  start,
+  "end"
+from
+  pagerduty_on_call;
+```
+
+```sql+sqlite
 select
   escalation_policy,
   user_on_call,
@@ -31,11 +43,20 @@ from
 ### Get the current on call user's name for a given schedule name
 Determine the current on-call individual for a specific schedule. This is useful for identifying who is responsible for handling urgent issues during a particular time frame.
 
-```sql
+```sql+postgres
 select
   user_on_call ->> 'summary' as "User"
 from
   pagerduty_on_call
 where
   schedule ->> 'summary' = 'Schedule Name';
+```
+
+```sql+sqlite
+select
+  json_extract(user_on_call, '$.summary') as "User"
+from
+  pagerduty_on_call
+where
+  json_extract(schedule, '$.summary') = 'Schedule Name';
 ```

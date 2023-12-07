@@ -19,7 +19,17 @@ The `pagerduty_priority` table provides insights into the different levels of ur
 ### Basic info
 Explore the priorities in your PagerDuty setup to gain insights into their names, IDs, and descriptions, helping you better understand and manage your incident response hierarchy.
 
-```sql
+```sql+postgres
+select
+  name,
+  id,
+  description,
+  self
+from
+  pagerduty_priority;
+```
+
+```sql+sqlite
 select
   name,
   id,
@@ -32,7 +42,7 @@ from
 ### List event rules with highest priority (P1)
 Discover the segments that have the highest priority (P1) in the event rules. This can be useful for identifying and prioritizing the most critical rules for incident management.
 
-```sql
+```sql+postgres
 with priority as (
   select
     id
@@ -50,4 +60,16 @@ from
   priority as p
 where
   p.id = rs.actions -> 'priority' ->> 'value';
+```
+
+```sql+sqlite
+select
+  rs.id as rule_id,
+  rs.ruleset_id,
+  rs.disabled
+from
+  pagerduty_ruleset_rule as rs,
+  (select id from pagerduty_priority where name = 'P1') as p
+where
+  p.id = json_extract(rs.actions, '$.priority.value');
 ```

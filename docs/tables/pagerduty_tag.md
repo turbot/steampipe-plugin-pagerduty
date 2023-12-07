@@ -16,7 +16,16 @@ The `pagerduty_tag` table provides insights into Tags within PagerDuty's inciden
 ### Basic info
 Explore which PagerDuty tags are being used. This can help in managing and organizing your PagerDuty services and incidents more effectively.
 
-```sql
+```sql+postgres
+select
+  id,
+  label,
+  self
+from
+  pagerduty_tag;
+```
+
+```sql+sqlite
 select
   id,
   label,
@@ -28,7 +37,7 @@ from
 ### List unused tags
 Identify the tags that are currently not associated with any users, teams, or escalation policies in PagerDuty. This can help streamline your tagging system by removing or reassigning unused tags.
 
-```sql
+```sql+postgres
 with associated_tags as (
   select
     t ->> 'id' as id
@@ -63,4 +72,8 @@ from
   left join distinct_tags as dt on t.id = dt.id
 where
   dt.id is null;
+```
+
+```sql+sqlite
+Error: The corresponding SQLite query is unavailable.
 ```

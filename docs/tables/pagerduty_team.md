@@ -16,7 +16,17 @@ The `pagerduty_team` table provides insights into teams within PagerDuty. As a D
 ### Basic info
 Explore the essential details of your PagerDuty team to gain insights into team structure and roles, which can be useful for auditing or restructuring purposes.
 
-```sql
+```sql+postgres
+select
+  name,
+  id,
+  description,
+  self
+from
+  pagerduty_team;
+```
+
+```sql+sqlite
 select
   name,
   id,
@@ -29,7 +39,19 @@ from
 ### List teams with no members
 Discover the teams that currently have no members assigned to them. This can be useful for identifying and managing unallocated resources or underutilized teams within your organization.
 
-```sql
+```sql+postgres
+select
+  name,
+  id,
+  description,
+  self
+from
+  pagerduty_team
+where
+  members is null;
+```
+
+```sql+sqlite
 select
   name,
   id,
@@ -44,7 +66,7 @@ where
 ### List members with pending invitation
 Explore which team members have yet to accept their invitations. This is useful in monitoring the status of team onboarding and identifying any potential issues or delays.
 
-```sql
+```sql+postgres
 select
   t.name as team_name,
   member -> 'user' ->> 'summary' as user_name,
@@ -56,5 +78,20 @@ from
   pagerduty_user as u
 where
   member -> 'user' ->> 'id' = u.id
+  and u.invitation_sent;
+```
+
+```sql+sqlite
+select
+  t.name as team_name,
+  json_extract(member.value, '$.user.summary') as user_name,
+  json_extract(member.value, '$.role') as role,
+  u.invitation_sent
+from
+  pagerduty_team as t,
+  json_each(members) as member,
+  pagerduty_user as u
+where
+  json_extract(member.value, '$.user.id') = u.id
   and u.invitation_sent;
 ```

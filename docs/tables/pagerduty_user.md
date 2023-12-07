@@ -16,7 +16,17 @@ The `pagerduty_user` table provides insights into user profiles within PagerDuty
 ### Basic info
 Explore the user base in your PagerDuty account to understand their roles and contact information. This can help in managing team responsibilities and communication channels effectively.
 
-```sql
+```sql+postgres
+select
+  name,
+  id,
+  email,
+  role
+from
+  pagerduty_user;
+```
+
+```sql+sqlite
 select
   name,
   id,
@@ -29,7 +39,7 @@ from
 ### List invited users
 Discover the details of users who have been invited to join your PagerDuty team. This can help you track pending invitations and understand the roles assigned to each invitee.
 
-```sql
+```sql+postgres
 select
   name,
   id,
@@ -41,10 +51,22 @@ where
   invitation_sent;
 ```
 
+```sql+sqlite
+select
+  name,
+  id,
+  email,
+  role
+from
+  pagerduty_user
+where
+  invitation_sent = 1;
+```
+
 ### List users not in any team
 Discover the segments that consist of users who are not part of any team, a useful approach for identifying potential areas for team expansion or redistribution of tasks.
 
-```sql
+```sql+postgres
 select
   name,
   id,
@@ -56,10 +78,22 @@ where
   jsonb_array_length(teams) < 1;
 ```
 
+```sql+sqlite
+select
+  name,
+  id,
+  email,
+  role
+from
+  pagerduty_user
+where
+  (select count(*) from json_each(teams)) < 1;
+```
+
 ### List users with `owner` tags
 Discover the segments that consist of users tagged as 'owners' in your system. This allows you to quickly identify and communicate with the responsible parties for specific tasks or issues.
 
-```sql
+```sql+postgres
 select
   name,
   id,
@@ -70,4 +104,17 @@ from
   jsonb_array_elements(tags) as t
 where
   t ->> 'label' ilike 'owner';
+```
+
+```sql+sqlite
+select
+  name,
+  id,
+  email,
+  role
+from
+  pagerduty_user,
+  json_each(tags) as t
+where
+  json_extract(t.value, '$.label') like 'owner';
 ```

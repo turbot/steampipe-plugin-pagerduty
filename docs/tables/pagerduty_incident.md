@@ -16,7 +16,7 @@ The `pagerduty_incident` table provides detailed insights into incidents managed
 ### List unacknowledged incidents for the last 30 days
 Explore the recent incidents that have not been addressed in the past month. This is beneficial for prioritizing urgent tasks and understanding the backlog of unresolved issues.
 
-```sql
+```sql+postgres
 select
   incident_number,
   summary,
@@ -30,10 +30,24 @@ where
   and created_at >= now() - interval '30 days';
 ```
 
+```sql+sqlite
+select
+  incident_number,
+  summary,
+  urgency,
+  created_at,
+  assignments
+from
+  pagerduty_incident
+where
+  status = 'triggered'
+  and created_at >= datetime('now', '-30 days');
+```
+
 ### List unacknowledged incidents with high urgency for the last 1 week
 Determine the high urgency incidents from the past week that are still pending acknowledgment. This aids in prioritizing immediate action on urgent matters that have been overlooked.
 
-```sql
+```sql+postgres
 select
   incident_number,
   summary,
@@ -48,10 +62,25 @@ where
   and created_at >= now() - interval '7 days';
 ```
 
+```sql+sqlite
+select
+  incident_number,
+  summary,
+  urgency,
+  created_at,
+  assignments
+from
+  pagerduty_incident
+where
+  status = 'triggered'
+  and urgency = 'high'
+  and created_at >= datetime('now', '-7 days');
+```
+
 ### List unacknowledged incidents assigned to a specific user for the last 3 days
 Determine the areas in which urgent issues have not been acknowledged by a specific team member in the last three days. This helps to identify potential bottlenecks and ensures that critical incidents are addressed promptly.
 
-```sql
+```sql+postgres
 select
   i.incident_number,
   i.summary,
@@ -68,10 +97,27 @@ where
   and created_at >= now() - interval '3 days';
 ```
 
+```sql+sqlite
+select
+  i.incident_number,
+  i.summary,
+  i.urgency,
+  i.created_at,
+  p.email as assigned_to
+from
+  pagerduty_incident as i,
+  json_each(i.assignments) as a
+  join pagerduty_user as p on p.id = json_extract(a.value, '$.assignee.id')
+where
+  p.id = 'P5ISTE8'
+  and status = 'triggered'
+  and created_at >= datetime('now', '-3 days');
+```
+
 ### List all unacknowledged incidents for the last 7 days
 Gain insights into all the recent incidents that have not been addressed yet, within the past week. This can help prioritize urgent matters and streamline incident response.
 
-```sql
+```sql+postgres
 select
   incident_number,
   summary,
@@ -83,4 +129,18 @@ from
 where
   status = 'triggered'
   and created_at >= now() - interval '7 days';
+```
+
+```sql+sqlite
+select
+  incident_number,
+  summary,
+  urgency,
+  created_at,
+  assignments
+from
+  pagerduty_incident
+where
+  status = 'triggered'
+  and created_at >= datetime('now', '-7 days');
 ```
