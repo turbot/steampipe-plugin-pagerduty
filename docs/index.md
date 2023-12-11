@@ -73,7 +73,4 @@ connection "pagerduty" {
 }
 ```
 
-## Get involved
 
-- Open source: https://github.com/turbot/steampipe-plugin-pagerduty
-- Community: [Join #steampipe on Slack →](https://turbot.com/community/join)
