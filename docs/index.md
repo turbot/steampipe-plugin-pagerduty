@@ -8,6 +8,7 @@ short_name: "pagerduty"
 description: "Steampipe plugin to query services, teams, escalation policies and more from your PagerDuty account."
 og_description: "Query PagerDuty with SQL! Open source CLI. No DB required."
 og_image: "/images/plugins/turbot/pagerduty-social-graphic.png"
+engines: ["steampipe", "sqlite", "postgres", "export"]
 ---
 
 # PagerDuty + Steampipe
