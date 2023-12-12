@@ -8,13 +8,14 @@ short_name: "pagerduty"
 description: "Steampipe plugin to query services, teams, escalation policies and more from your PagerDuty account."
 og_description: "Query PagerDuty with SQL! Open source CLI. No DB required."
 og_image: "/images/plugins/turbot/pagerduty-social-graphic.png"
+engines: ["steampipe", "sqlite", "postgres", "export"]
 ---
 
 # PagerDuty + Steampipe
 
 [PagerDuty](https://www.pagerduty.com/) is a platform for agile incident management.
 
-[Steampipe](https://steampipe.io) is an open source CLI to instantly query cloud APIs using SQL.
+[Steampipe](https://steampipe.io) is an open-source zero-ETL engine to instantly query cloud APIs using SQL.
 
 List disabled services in your PagerDuty account:
 
@@ -72,7 +73,4 @@ connection "pagerduty" {
 }
 ```
 
-## Get involved
 
-- Open source: https://github.com/turbot/steampipe-plugin-pagerduty
-- Community: [Join #steampipe on Slack →](https://turbot.com/community/join)
