@@ -4,6 +4,8 @@ import (
 	"context"
 	"time"
 
+	"github.com/google/go-querystring/query"
+
 	"github.com/PagerDuty/go-pagerduty"
 
 	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
@@ -35,6 +37,10 @@ func tablePagerDutyIncident(_ context.Context) *plugin.Table {
 				},
 				{
 					Name:    "urgency",
+					Require: plugin.Optional,
+				},
+				{
+					Name:    "service_id",
 					Require: plugin.Optional,
 				},
 			},
@@ -175,6 +181,14 @@ func tablePagerDutyIncident(_ context.Context) *plugin.Table {
 				Description: "The teams involved in the incident's lifecycle.",
 				Type:        proto.ColumnType_JSON,
 			},
+			{
+				Name:        "service_id",
+				Description: "The service id.",
+				Type:        proto.ColumnType_STRING,
+				Hydrate: func(ctx context.Context, queryData *plugin.QueryData, hydrateData *plugin.HydrateData) (interface{}, error) {
+					return hydrateData.Item.(pagerduty.Incident).Service.ID, nil
+				},
+			},
 
 			// Steampipe standard columns
 			{
@@ -190,6 +204,8 @@ func tablePagerDutyIncident(_ context.Context) *plugin.Table {
 //// LIST FUNCTION
 
 func listPagerDutyIncidents(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+	plugin.Logger(ctx).Trace("pagerduty_incident.listPagerDutyIncidents", "hello here")
+
 	// Create client
 	client, err := getSessionConfig(ctx, d)
 	if err != nil {
@@ -242,6 +258,15 @@ func listPagerDutyIncidents(ctx context.Context, d *plugin.QueryData, h *plugin.
 		}
 	}
 
+	plugin.Logger(ctx).Trace("pagerduty_incident.listPagerDutyIncidents", "service_id", quals["service_id"])
+	if quals["service_id"] != nil {
+		for _, q := range quals["service_id"].Quals {
+			if q.Operator == "=" {
+				req.ServiceIDs = append(req.ServiceIDs, q.Value.GetStringValue())
+			}
+		}
+	}
+
 	// Retrieve the list of incidents
 	maxResult := uint(100)
 
@@ -254,6 +279,9 @@ func listPagerDutyIncidents(ctx context.Context, d *plugin.QueryData, h *plugin.
 	}
 	req.APIListObject.Limit = maxResult
 
+	v, _ := query.Values(req)
+	plugin.Logger(ctx).Trace("pagerduty_incident.listPagerDutyIncidents", "urlvalues", v.Encode())
+
 	listPage := func(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 		incidents, err := client.ListIncidentsWithContext(ctx, req)
 		return incidents, err
@@ -265,6 +293,8 @@ func listPagerDutyIncidents(ctx context.Context, d *plugin.QueryData, h *plugin.
 			return nil, err
 		}
 		listResponse := listPageResponse.(*pagerduty.ListIncidentsResponse)
+
+		plugin.Logger(ctx).Trace("pagerduty_incident.listPagerDutyIncidents", "returned_incidents", len(listResponse.Incidents))
 
 		for _, incident := range listResponse.Incidents {
 			d.StreamListItem(ctx, incident)
