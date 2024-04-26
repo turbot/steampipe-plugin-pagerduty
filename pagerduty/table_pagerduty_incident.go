@@ -2,9 +2,8 @@ package pagerduty
 
 import (
 	"context"
-	"time"
-
 	"github.com/google/go-querystring/query"
+	"time"
 
 	"github.com/PagerDuty/go-pagerduty"
 
@@ -185,9 +184,14 @@ func tablePagerDutyIncident(_ context.Context) *plugin.Table {
 				Name:        "service_id",
 				Description: "The service id.",
 				Type:        proto.ColumnType_STRING,
-				Hydrate: func(ctx context.Context, queryData *plugin.QueryData, hydrateData *plugin.HydrateData) (interface{}, error) {
-					return hydrateData.Item.(pagerduty.Incident).Service.ID, nil
-				},
+				Transform:   transform.FromField("Service.ID"),
+			},
+			{
+				Name:        "custom_fields",
+				Description: "Custom fields for the incident.",
+				Type:        proto.ColumnType_JSON,
+				Transform:   transform.FromValue(),
+				Hydrate:     hydrateCustomFields,
 			},
 
 			// Steampipe standard columns
@@ -204,8 +208,6 @@ func tablePagerDutyIncident(_ context.Context) *plugin.Table {
 //// LIST FUNCTION
 
 func listPagerDutyIncidents(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
-	plugin.Logger(ctx).Trace("pagerduty_incident.listPagerDutyIncidents", "hello here")
-
 	// Create client
 	client, err := getSessionConfig(ctx, d)
 	if err != nil {
@@ -351,4 +353,19 @@ func getPagerDutyIncident(ctx context.Context, d *plugin.QueryData, h *plugin.Hy
 
 func convertTimeString(t time.Time) string {
 	return t.Format(time.RFC3339)
+}
+
+func hydrateCustomFields(ctx context.Context, queryData *plugin.QueryData, hydrateData *plugin.HydrateData) (interface{}, error) {
+	client, err := getSessionConfig(ctx, queryData)
+	if err != nil {
+		plugin.Logger(ctx).Error("pagerduty_incident.HydrateCustomFields", "connection_error", err)
+		return nil, err
+	}
+
+	resp, err := client.GetIncidentCustomFields(ctx, hydrateData.Item.(pagerduty.Incident).Id)
+	if err != nil {
+		return nil, err
+	}
+
+	return resp["custom_fields"], nil
 }

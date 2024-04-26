@@ -10,11 +10,11 @@ import (
 )
 
 // getSessionConfig :: returns PagerDuty client to perform API requests
-func getSessionConfig(ctx context.Context, d *plugin.QueryData) (*pagerduty.Client, error) {
+func getSessionConfig(ctx context.Context, d *plugin.QueryData) (*ExtendedPagerDutyClient, error) {
 	// Load clientOptions from cache
 	sessionCacheKey := "pagerduty.clientoption"
 	if cachedData, ok := d.ConnectionManager.Cache.Get(sessionCacheKey); ok {
-		return cachedData.(*pagerduty.Client), nil
+		return cachedData.(*ExtendedPagerDutyClient), nil
 	}
 
 	// Get pagerduty config
@@ -32,7 +32,7 @@ func getSessionConfig(ctx context.Context, d *plugin.QueryData) (*pagerduty.Clie
 	}
 
 	// Create client
-	client := pagerduty.NewClient(token)
+	client := NewExtendedPagerDutyClient(pagerduty.NewClient(token), token)
 
 	// save clientOptions in cache
 	d.ConnectionManager.Cache.Set(sessionCacheKey, client)
