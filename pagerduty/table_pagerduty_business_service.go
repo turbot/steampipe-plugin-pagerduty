@@ -164,8 +164,6 @@ func hydrateBusinessServiceDependencies(ctx context.Context, queryData *plugin.Q
 		return nil, err
 	}
 
-	plugin.Logger(ctx).Trace("pagerduty_service.hydrateBusinessServiceDependencies", hydrateData.Item.(*pagerduty.BusinessService).ID)
-
 	resp, err := client.GetBusinessServiceDependencies(ctx, hydrateData.Item.(*pagerduty.BusinessService).ID)
 	if err != nil {
 		return nil, err
