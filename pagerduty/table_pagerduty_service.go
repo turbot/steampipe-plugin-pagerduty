@@ -257,8 +257,6 @@ func hydrateServiceDependencies(ctx context.Context, queryData *plugin.QueryData
 		return nil, err
 	}
 
-	plugin.Logger(ctx).Trace("pagerduty_service.hydrateServiceDependencies", hydrateData.Item.(*pagerduty.Service).ID)
-
 	resp, err := client.GetServiceDependencies(ctx, hydrateData.Item.(*pagerduty.Service).ID)
 	if err != nil {
 		return nil, err
