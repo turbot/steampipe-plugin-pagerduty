@@ -4,9 +4,10 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/PagerDuty/go-pagerduty"
 	"io"
 	"net/http"
+
+	"github.com/PagerDuty/go-pagerduty"
 )
 
 const (
@@ -24,6 +25,15 @@ func NewExtendedPagerDutyClient(client *pagerduty.Client, token string) *Extende
 
 func (c *ExtendedPagerDutyClient) GetIncidentCustomFields(ctx context.Context, incidentID string) (map[string]interface{}, error) {
 	resp, err := c.get(ctx, fmt.Sprintf("/incidents/%s/custom_fields/values", incidentID))
+	if err != nil {
+		return nil, err
+	}
+
+	return c.decodeJSON(resp)
+}
+
+func (c *ExtendedPagerDutyClient) GetIncidentBusinessServicesImpacts(ctx context.Context, incidentID string) (map[string]interface{}, error) {
+	resp, err := c.get(ctx, fmt.Sprintf("/incidents/%s/business_services/impacts", incidentID))
 	if err != nil {
 		return nil, err
 	}
