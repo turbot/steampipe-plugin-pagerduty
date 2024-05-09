@@ -234,7 +234,7 @@ func getPagerDutyService(ctx context.Context, d *plugin.QueryData, h *plugin.Hyd
 		return nil, err
 	}
 
-	return data, nil
+	return *data, nil
 }
 
 func buildServiceRequestFields(ctx context.Context, queryColumns []string) []string {
@@ -257,7 +257,7 @@ func hydrateServiceDependencies(ctx context.Context, queryData *plugin.QueryData
 		return nil, err
 	}
 
-	resp, err := client.GetServiceDependencies(ctx, hydrateData.Item.(*pagerduty.Service).ID)
+	resp, err := client.GetServiceDependencies(ctx, hydrateData.Item.(pagerduty.Service).ID)
 	if err != nil {
 		return nil, err
 	}

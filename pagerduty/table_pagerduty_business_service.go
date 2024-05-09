@@ -117,7 +117,7 @@ func listPagerDutyBusinessServices(ctx context.Context, d *plugin.QueryData, _ *
 	}
 
 	for _, service := range resp {
-		d.StreamListItem(ctx, service)
+		d.StreamListItem(ctx, *service)
 
 		// Context can be cancelled due to manual cancellation or the limit has been hit
 		if d.RowsRemaining(ctx) == 0 {
@@ -154,7 +154,7 @@ func getPagerDutyBusinessService(ctx context.Context, d *plugin.QueryData, h *pl
 		return nil, err
 	}
 
-	return data, nil
+	return *data, nil
 }
 
 func hydrateBusinessServiceDependencies(ctx context.Context, queryData *plugin.QueryData, hydrateData *plugin.HydrateData) (interface{}, error) {
@@ -164,7 +164,7 @@ func hydrateBusinessServiceDependencies(ctx context.Context, queryData *plugin.Q
 		return nil, err
 	}
 
-	resp, err := client.GetBusinessServiceDependencies(ctx, hydrateData.Item.(*pagerduty.BusinessService).ID)
+	resp, err := client.GetBusinessServiceDependencies(ctx, hydrateData.Item.(pagerduty.BusinessService).ID)
 	if err != nil {
 		return nil, err
 	}
