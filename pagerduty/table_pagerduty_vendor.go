@@ -141,11 +141,6 @@ func listPagerDutyVendors(ctx context.Context, d *plugin.QueryData, h *plugin.Hy
 
 	req := pagerduty.ListVendorOptions{}
 
-	// Additional Filters
-	if d.EqualsQuals["name"] != nil {
-		req.Query = d.EqualsQuals["name"].GetStringValue()
-	}
-
 	// Retrieve the list of vendors
 	maxResult := uint(100)
 
@@ -156,7 +151,7 @@ func listPagerDutyVendors(ctx context.Context, d *plugin.QueryData, h *plugin.Hy
 			maxResult = uint(*limit)
 		}
 	}
-	req.APIListObject.Limit = maxResult
+	req.Limit = maxResult
 
 	listPage := func(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 		vendors, err := client.ListVendorsWithContext(ctx, req)
@@ -182,7 +177,7 @@ func listPagerDutyVendors(ctx context.Context, d *plugin.QueryData, h *plugin.Hy
 		if !listResponse.APIListObject.More {
 			break
 		}
-		req.APIListObject.Offset = listResponse.APIListObject.Offset + listResponse.APIListObject.Limit
+		req.Offset = listResponse.APIListObject.Offset + listResponse.APIListObject.Limit
 	}
 
 	return nil, nil

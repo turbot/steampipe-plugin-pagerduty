@@ -180,7 +180,7 @@ func listPagerDutyServices(ctx context.Context, d *plugin.QueryData, _ *plugin.H
 			maxResult = uint(*limit)
 		}
 	}
-	req.APIListObject.Limit = maxResult
+	req.Limit = maxResult
 
 	// Check for additional models to include in response
 	// for example, escalation_policy, integrations, teams

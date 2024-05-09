@@ -79,7 +79,7 @@ func listPagerDutyPriorities(ctx context.Context, d *plugin.QueryData, h *plugin
 	}
 
 	listPage := func(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
-		data, err := client.ListPrioritiesWithContext(ctx)
+		data, err := client.ListPrioritiesWithContext(ctx, pagerduty.ListPrioritiesOptions{})
 		return data, err
 	}
 	listResponse, err := plugin.RetryHydrate(ctx, d, h, listPage, &plugin.RetryConfig{ShouldRetryError: shouldRetryError})

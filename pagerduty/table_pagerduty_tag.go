@@ -97,7 +97,7 @@ func listPagerDutyTags(ctx context.Context, d *plugin.QueryData, h *plugin.Hydra
 			maxResult = uint(*limit)
 		}
 	}
-	req.APIListObject.Limit = maxResult
+	req.Limit = maxResult
 
 	listPage := func(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 		data, err := client.ListTagsPaginated(ctx, req)

@@ -171,7 +171,7 @@ func listPagerDutyUsers(ctx context.Context, d *plugin.QueryData, h *plugin.Hydr
 			maxResult = uint(*limit)
 		}
 	}
-	req.APIListObject.Limit = maxResult
+	req.Limit = maxResult
 
 	// Check for additional models to include in response
 	// for example, contact_methods, notification_rules, teams
@@ -206,7 +206,7 @@ func listPagerDutyUsers(ctx context.Context, d *plugin.QueryData, h *plugin.Hydr
 		if !listResponse.APIListObject.More {
 			break
 		}
-		req.APIListObject.Offset = listResponse.APIListObject.Offset + listResponse.APIListObject.Limit
+		req.Offset = listResponse.APIListObject.Offset + listResponse.APIListObject.Limit
 	}
 
 	return nil, nil

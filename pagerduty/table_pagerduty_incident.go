@@ -52,6 +52,7 @@ func tablePagerDutyIncident(_ context.Context) *plugin.Table {
 				Name:        "id",
 				Description: "An unique identifier of the incident.",
 				Type:        proto.ColumnType_STRING,
+				Transform:   transform.FromField("ID"),
 			},
 			{
 				Name:        "incident_number",
@@ -284,7 +285,7 @@ func listPagerDutyIncidents(ctx context.Context, d *plugin.QueryData, h *plugin.
 			maxResult = uint(*limit)
 		}
 	}
-	req.APIListObject.Limit = maxResult
+	req.Limit = maxResult
 
 	listPage := func(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 		incidents, err := client.ListIncidentsWithContext(ctx, req)
@@ -311,7 +312,7 @@ func listPagerDutyIncidents(ctx context.Context, d *plugin.QueryData, h *plugin.
 			break
 		}
 
-		req.APIListObject.Offset = listResponse.APIListObject.Offset + listResponse.APIListObject.Limit
+		req.Offset = listResponse.APIListObject.Offset + listResponse.APIListObject.Limit
 	}
 
 	return nil, nil
@@ -362,7 +363,7 @@ func hydrateCustomFields(ctx context.Context, queryData *plugin.QueryData, hydra
 		return nil, err
 	}
 
-	resp, err := client.GetIncidentCustomFields(ctx, hydrateData.Item.(pagerduty.Incident).Id)
+	resp, err := client.GetIncidentCustomFields(ctx, hydrateData.Item.(pagerduty.Incident).ID)
 	if err != nil {
 		return nil, err
 	}
@@ -377,7 +378,7 @@ func hydrateImpactedBusinessServices(ctx context.Context, queryData *plugin.Quer
 		return nil, err
 	}
 
-	resp, err := client.GetIncidentBusinessServicesImpacts(ctx, hydrateData.Item.(pagerduty.Incident).Id)
+	resp, err := client.GetIncidentBusinessServicesImpacts(ctx, hydrateData.Item.(pagerduty.Incident).ID)
 	if err != nil {
 		return nil, err
 	}

@@ -108,7 +108,7 @@ func listPagerDutyBusinessServices(ctx context.Context, d *plugin.QueryData, _ *
 			maxResult = uint(*limit)
 		}
 	}
-	req.APIListObject.Limit = maxResult
+	req.Limit = maxResult
 
 	resp, err := client.ListBusinessServicesPaginated(ctx, req)
 	if err != nil {

@@ -133,7 +133,7 @@ func listPagerDutyEscalationPolicies(ctx context.Context, d *plugin.QueryData, h
 			maxResult = uint(*limit)
 		}
 	}
-	req.APIListObject.Limit = maxResult
+	req.Limit = maxResult
 
 	listPage := func(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 		policies, err := client.ListEscalationPoliciesWithContext(ctx, req)
@@ -159,7 +159,7 @@ func listPagerDutyEscalationPolicies(ctx context.Context, d *plugin.QueryData, h
 		if !listResponse.APIListObject.More {
 			break
 		}
-		req.APIListObject.Offset = listResponse.APIListObject.Offset + listResponse.APIListObject.Limit
+		req.Offset = listResponse.APIListObject.Offset + listResponse.APIListObject.Limit
 	}
 
 	return nil, nil
