@@ -91,7 +91,7 @@ func listPagerDutyPriorities(ctx context.Context, d *plugin.QueryData, h *plugin
 		plugin.Logger(ctx).Error("pagerduty_priority.listPagerDutyPriorities", "query_error", err)
 		return nil, err
 	}
-	resp := listResponse.(*pagerduty.Priorities)
+	resp := listResponse.(*pagerduty.ListPrioritiesResponse)
 
 	for _, priority := range resp.Priorities {
 		d.StreamListItem(ctx, priority)

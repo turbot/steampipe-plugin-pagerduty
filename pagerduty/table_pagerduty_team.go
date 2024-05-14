@@ -197,7 +197,7 @@ func listPagerDutyTeamMembers(ctx context.Context, d *plugin.QueryData, h *plugi
 	}
 
 	listPage := func(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
-		data, err := client.ListMembersPaginated(ctx, data.ID)
+		data, err := client.ListTeamMembersPaginated(ctx, data.ID)
 		return data, err
 	}
 	listResponse, err := plugin.RetryHydrate(ctx, d, h, listPage, &plugin.RetryConfig{ShouldRetryError: shouldRetryError})
