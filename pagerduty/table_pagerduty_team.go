@@ -120,7 +120,7 @@ func listPagerDutyTeams(ctx context.Context, d *plugin.QueryData, h *plugin.Hydr
 			maxResult = uint(*limit)
 		}
 	}
-	req.APIListObject.Limit = maxResult
+	req.Limit = maxResult
 
 	listPage := func(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 		teams, err := client.ListTeamsWithContext(ctx, req)
@@ -146,7 +146,7 @@ func listPagerDutyTeams(ctx context.Context, d *plugin.QueryData, h *plugin.Hydr
 		if !listResponse.APIListObject.More {
 			break
 		}
-		req.APIListObject.Offset = listResponse.APIListObject.Offset + listResponse.APIListObject.Limit
+		req.Offset = listResponse.APIListObject.Offset + listResponse.APIListObject.Limit
 	}
 
 	return nil, nil
@@ -197,7 +197,7 @@ func listPagerDutyTeamMembers(ctx context.Context, d *plugin.QueryData, h *plugi
 	}
 
 	listPage := func(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
-		data, err := client.ListMembersPaginated(ctx, data.ID)
+		data, err := client.ListTeamMembersPaginated(ctx, data.ID)
 		return data, err
 	}
 	listResponse, err := plugin.RetryHydrate(ctx, d, h, listPage, &plugin.RetryConfig{ShouldRetryError: shouldRetryError})

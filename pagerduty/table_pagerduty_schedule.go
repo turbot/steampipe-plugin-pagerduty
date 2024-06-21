@@ -146,7 +146,7 @@ func listPagerDutySchedules(ctx context.Context, d *plugin.QueryData, h *plugin.
 			maxResult = uint(*limit)
 		}
 	}
-	req.APIListObject.Limit = maxResult
+	req.Limit = maxResult
 
 	listPage := func(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 		schedules, err := client.ListSchedulesWithContext(ctx, req)
@@ -172,7 +172,7 @@ func listPagerDutySchedules(ctx context.Context, d *plugin.QueryData, h *plugin.
 		if !listResponse.APIListObject.More {
 			break
 		}
-		req.APIListObject.Offset = listResponse.APIListObject.Offset + listResponse.APIListObject.Limit
+		req.Offset = listResponse.APIListObject.Offset + listResponse.APIListObject.Limit
 	}
 
 	return nil, nil

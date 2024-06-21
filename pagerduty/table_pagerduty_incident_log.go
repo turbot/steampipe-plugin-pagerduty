@@ -167,7 +167,7 @@ func listPagerDutyIncidentLogs(ctx context.Context, d *plugin.QueryData, h *plug
 			maxResult = uint(*limit)
 		}
 	}
-	req.APIListObject.Limit = maxResult
+	req.Limit = maxResult
 
 	listPage := func(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 		incidentLogs, err := client.ListIncidentLogEntriesWithContext(ctx, incidentID, req)
@@ -193,7 +193,7 @@ func listPagerDutyIncidentLogs(ctx context.Context, d *plugin.QueryData, h *plug
 		if !listResponse.APIListObject.More {
 			break
 		}
-		req.APIListObject.Offset = listResponse.APIListObject.Offset + listResponse.APIListObject.Limit
+		req.Offset = listResponse.APIListObject.Offset + listResponse.APIListObject.Limit
 	}
 
 	return nil, nil
