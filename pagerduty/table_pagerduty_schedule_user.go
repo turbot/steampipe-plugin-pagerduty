@@ -12,7 +12,7 @@ import (
 func tablePagerDutyScheduleUser(_ context.Context) *plugin.Table {
 	return &plugin.Table{
 		Name:        "pagerduty_schedule_user",
-		Description: "Users who are part of a PagerDuty schedule rotation.",
+		Description: "List users who are part of a PagerDuty schedule rotation.",
 		List: &plugin.ListConfig{
 			ParentHydrate: listPagerDutySchedules,
 			Hydrate:       listPagerDutyScheduleUsers,
