@@ -27,6 +27,7 @@ func Plugin(ctx context.Context) *plugin.Plugin {
 			"pagerduty_ruleset":             tablePagerDutyRuleset(ctx),
 			"pagerduty_ruleset_rule":        tablePagerDutyRulesetRule(ctx),
 			"pagerduty_schedule":            tablePagerDutySchedule(ctx),
+			"pagerduty_schedule_user":       tablePagerDutyScheduleUser(ctx),
 			"pagerduty_service":             tablePagerDutyService(ctx),
 			"pagerduty_service_integration": tablePagerDutyServiceIntegration(ctx),
 			"pagerduty_tag":                 tablePagerDutyTag(ctx),
