@@ -1,6 +1,6 @@
 ---
 title: "Steampipe Table: pagerduty_schedule_user - Query PagerDuty Schedule Users using SQL"
-description: "Allows users to query Schedule Users in PagerDuty, specifically providing details about users assigned to each schedule including their roles, contact information, and schedule assignments."
+description: "Allows users to query Schedule Users in PagerDuty, specifically providing details about users assigned to each schedule, including their roles, contact information, and schedule assignments."
 ---
 
 # Table: pagerduty_schedule_user - Query PagerDuty Schedule Users using SQL
@@ -14,7 +14,6 @@ The `pagerduty_schedule_user` table provides insights into user assignments with
 ## Examples
 
 ### Basic info
-
 Explore which users are assigned to different schedules in PagerDuty to understand the distribution of on-call responsibilities.
 
 ```sql+postgres
@@ -40,7 +39,6 @@ from
 ```
 
 ### List users for a specific schedule
-
 Identify the users assigned to a particular schedule to understand the on-call rotation for that specific schedule.
 
 ```sql+postgres
@@ -70,7 +68,6 @@ where
 ```
 
 ### Find users assigned to multiple schedules
-
 Discover users who are part of multiple schedule rotations to help identify potential overload situations.
 
 ```sql+postgres
@@ -108,7 +105,6 @@ order by
 ```
 
 ### List users by timezone
-
 Analyze the distribution of on-call users across different timezones to ensure global coverage.
 
 ```sql+postgres
@@ -138,7 +134,6 @@ order by
 ```
 
 ### Find schedules and their associated escalation policies
-
 Identify which escalation policies are using each schedule and who the users are in those schedules.
 
 ```sql+postgres
@@ -172,7 +167,6 @@ order by
 ```
 
 ### List users with their contact methods and notification rules
-
 Get detailed information about how schedule users can be contacted and their notification preferences.
 
 ```sql+postgres
@@ -210,7 +204,6 @@ order by
 ```
 
 ### Find schedules with their services and incidents
-
 Analyze which services are associated with schedules through escalation policies and list any recent incidents.
 
 ```sql+postgres
