@@ -1,3 +1,10 @@
+## v1.2.0 [2025-05-15]
+
+_What's new?_
+
+- New tables added
+  - [pagerduty_schedule_user](https://hub.steampipe.io/plugins/turbot/pagerduty/tables/pagerduty_schedule_user) ([#61](https://github.com/turbot/steampipe-plugin-pagerduty/pull/61))
+
 ## v1.1.1 [2025-04-18]
 
 _Bug fixes_
