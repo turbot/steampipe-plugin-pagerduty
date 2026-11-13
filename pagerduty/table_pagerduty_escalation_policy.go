@@ -5,9 +5,9 @@ import (
 
 	"github.com/PagerDuty/go-pagerduty"
 
-	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
-	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
-	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/transform"
+	"github.com/turbot/steampipe-plugin-sdk/v6/grpc/proto"
+	"github.com/turbot/steampipe-plugin-sdk/v6/plugin"
+	"github.com/turbot/steampipe-plugin-sdk/v6/plugin/transform"
 )
 
 //// TABLE DEFINITION
@@ -133,14 +133,14 @@ func listPagerDutyEscalationPolicies(ctx context.Context, d *plugin.QueryData, h
 			maxResult = uint(*limit)
 		}
 	}
-	req.APIListObject.Limit = maxResult
+	req.Limit = maxResult
 
 	listPage := func(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 		policies, err := client.ListEscalationPoliciesWithContext(ctx, req)
 		return policies, err
 	}
 	for {
-		listPageResponse, err := plugin.RetryHydrate(ctx, d, h, listPage, &plugin.RetryConfig{ShouldRetryError: shouldRetryError})
+		listPageResponse, err := plugin.RetryHydrate(ctx, d, h, listPage, &plugin.RetryConfig{ShouldRetryErrorFunc: shouldRetryError})
 		if err != nil {
 			plugin.Logger(ctx).Error("pagerduty_escalation_policy.listPagerDutyEscalationPolicies", "query_error", err)
 			return nil, err
@@ -156,10 +156,10 @@ func listPagerDutyEscalationPolicies(ctx context.Context, d *plugin.QueryData, h
 			}
 		}
 
-		if !listResponse.APIListObject.More {
+		if !listResponse.More {
 			break
 		}
-		req.APIListObject.Offset = listResponse.APIListObject.Offset + listResponse.APIListObject.Limit
+		req.Offset = listResponse.Offset + listResponse.Limit
 	}
 
 	return nil, nil
@@ -185,7 +185,7 @@ func getPagerDutyEscalationPolicy(ctx context.Context, d *plugin.QueryData, h *p
 		data, err := client.GetEscalationPolicyWithContext(ctx, id, &pagerduty.GetEscalationPolicyOptions{})
 		return data, err
 	}
-	getResponse, err := plugin.RetryHydrate(ctx, d, h, getDetails, &plugin.RetryConfig{ShouldRetryError: shouldRetryError})
+	getResponse, err := plugin.RetryHydrate(ctx, d, h, getDetails, &plugin.RetryConfig{ShouldRetryErrorFunc: shouldRetryError})
 	if err != nil {
 		plugin.Logger(ctx).Error("pagerduty_escalation_policy.getPagerDutyEscalationPolicy", "query_error", err)
 
@@ -213,7 +213,7 @@ func listPagerDutyEscalationPolicyTags(ctx context.Context, d *plugin.QueryData,
 		data, err := client.GetTagsForEntityPaginated(ctx, "escalation_policies", data.ID, pagerduty.ListTagOptions{})
 		return data, err
 	}
-	getResponse, err := plugin.RetryHydrate(ctx, d, h, getDetails, &plugin.RetryConfig{ShouldRetryError: shouldRetryError})
+	getResponse, err := plugin.RetryHydrate(ctx, d, h, getDetails, &plugin.RetryConfig{ShouldRetryErrorFunc: shouldRetryError})
 	if err != nil {
 		plugin.Logger(ctx).Error("pagerduty_escalation_policy.listPagerDutyEscalationPolicyTags", "query_error", err)
 		return nil, err

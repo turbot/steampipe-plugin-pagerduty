@@ -6,14 +6,14 @@ import (
 	"os"
 
 	"github.com/PagerDuty/go-pagerduty"
-	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
+	"github.com/turbot/steampipe-plugin-sdk/v6/plugin"
 )
 
 // getSessionConfig :: returns PagerDuty client to perform API requests
 func getSessionConfig(ctx context.Context, d *plugin.QueryData) (*pagerduty.Client, error) {
 	// Load clientOptions from cache
 	sessionCacheKey := "pagerduty.clientoption"
-	if cachedData, ok := d.ConnectionManager.Cache.Get(sessionCacheKey); ok {
+	if cachedData, ok := d.ConnectionCache.Get(ctx, sessionCacheKey); ok {
 		return cachedData.(*pagerduty.Client), nil
 	}
 
@@ -35,7 +35,7 @@ func getSessionConfig(ctx context.Context, d *plugin.QueryData) (*pagerduty.Clie
 	client := pagerduty.NewClient(token)
 
 	// save clientOptions in cache
-	d.ConnectionManager.Cache.Set(sessionCacheKey, client)
+	_ = d.ConnectionCache.Set(ctx, sessionCacheKey, client)
 
 	return client, nil
 }

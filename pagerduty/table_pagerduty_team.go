@@ -5,9 +5,9 @@ import (
 
 	"github.com/PagerDuty/go-pagerduty"
 
-	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
-	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
-	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/transform"
+	"github.com/turbot/steampipe-plugin-sdk/v6/grpc/proto"
+	"github.com/turbot/steampipe-plugin-sdk/v6/plugin"
+	"github.com/turbot/steampipe-plugin-sdk/v6/plugin/transform"
 )
 
 //// TABLE DEFINITION
@@ -120,14 +120,14 @@ func listPagerDutyTeams(ctx context.Context, d *plugin.QueryData, h *plugin.Hydr
 			maxResult = uint(*limit)
 		}
 	}
-	req.APIListObject.Limit = maxResult
+	req.Limit = maxResult
 
 	listPage := func(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 		teams, err := client.ListTeamsWithContext(ctx, req)
 		return teams, err
 	}
 	for {
-		listPageResponse, err := plugin.RetryHydrate(ctx, d, h, listPage, &plugin.RetryConfig{ShouldRetryError: shouldRetryError})
+		listPageResponse, err := plugin.RetryHydrate(ctx, d, h, listPage, &plugin.RetryConfig{ShouldRetryErrorFunc: shouldRetryError})
 		if err != nil {
 			plugin.Logger(ctx).Error("pagerduty_team.listPagerDutyTeams", "query_error", err)
 			return nil, err
@@ -143,10 +143,10 @@ func listPagerDutyTeams(ctx context.Context, d *plugin.QueryData, h *plugin.Hydr
 			}
 		}
 
-		if !listResponse.APIListObject.More {
+		if !listResponse.More {
 			break
 		}
-		req.APIListObject.Offset = listResponse.APIListObject.Offset + listResponse.APIListObject.Limit
+		req.Offset = listResponse.Offset + listResponse.Limit
 	}
 
 	return nil, nil
@@ -172,7 +172,7 @@ func getPagerDutyTeam(ctx context.Context, d *plugin.QueryData, h *plugin.Hydrat
 		data, err := client.GetTeamWithContext(ctx, id)
 		return data, err
 	}
-	getResponse, err := plugin.RetryHydrate(ctx, d, h, getDetails, &plugin.RetryConfig{ShouldRetryError: shouldRetryError})
+	getResponse, err := plugin.RetryHydrate(ctx, d, h, getDetails, &plugin.RetryConfig{ShouldRetryErrorFunc: shouldRetryError})
 	if err != nil {
 		plugin.Logger(ctx).Error("pagerduty_team.getPagerDutyTeam", "query_error", err)
 
@@ -200,7 +200,7 @@ func listPagerDutyTeamMembers(ctx context.Context, d *plugin.QueryData, h *plugi
 		data, err := client.ListMembersPaginated(ctx, data.ID)
 		return data, err
 	}
-	listResponse, err := plugin.RetryHydrate(ctx, d, h, listPage, &plugin.RetryConfig{ShouldRetryError: shouldRetryError})
+	listResponse, err := plugin.RetryHydrate(ctx, d, h, listPage, &plugin.RetryConfig{ShouldRetryErrorFunc: shouldRetryError})
 	if err != nil {
 		plugin.Logger(ctx).Error("pagerduty_team.listPagerDutyTeams", "query_error", err)
 		return nil, err
@@ -224,7 +224,7 @@ func listPagerDutyTeamTags(ctx context.Context, d *plugin.QueryData, h *plugin.H
 		data, err := client.GetTagsForEntityPaginated(ctx, "teams", data.ID, pagerduty.ListTagOptions{})
 		return data, err
 	}
-	getResponse, err := plugin.RetryHydrate(ctx, d, h, getDetails, &plugin.RetryConfig{ShouldRetryError: shouldRetryError})
+	getResponse, err := plugin.RetryHydrate(ctx, d, h, getDetails, &plugin.RetryConfig{ShouldRetryErrorFunc: shouldRetryError})
 	if err != nil {
 		plugin.Logger(ctx).Error("pagerduty_team.listPagerDutyTeamTags", "query_error", err)
 		return nil, err

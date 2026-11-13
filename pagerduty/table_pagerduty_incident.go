@@ -6,9 +6,9 @@ import (
 
 	"github.com/PagerDuty/go-pagerduty"
 
-	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
-	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
-	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/transform"
+	"github.com/turbot/steampipe-plugin-sdk/v6/grpc/proto"
+	"github.com/turbot/steampipe-plugin-sdk/v6/plugin"
+	"github.com/turbot/steampipe-plugin-sdk/v6/plugin/transform"
 )
 
 //// TABLE DEFINITION
@@ -252,14 +252,14 @@ func listPagerDutyIncidents(ctx context.Context, d *plugin.QueryData, h *plugin.
 			maxResult = uint(*limit)
 		}
 	}
-	req.APIListObject.Limit = maxResult
+	req.Limit = maxResult
 
 	listPage := func(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 		incidents, err := client.ListIncidentsWithContext(ctx, req)
 		return incidents, err
 	}
 	for {
-		listPageResponse, err := plugin.RetryHydrate(ctx, d, h, listPage, &plugin.RetryConfig{ShouldRetryError: shouldRetryError})
+		listPageResponse, err := plugin.RetryHydrate(ctx, d, h, listPage, &plugin.RetryConfig{ShouldRetryErrorFunc: shouldRetryError})
 		if err != nil {
 			plugin.Logger(ctx).Error("pagerduty_incident.listPagerDutyIncidents", "query_error", err)
 			return nil, err
@@ -275,11 +275,11 @@ func listPagerDutyIncidents(ctx context.Context, d *plugin.QueryData, h *plugin.
 			}
 		}
 
-		if !listResponse.APIListObject.More {
+		if !listResponse.More {
 			break
 		}
 
-		req.APIListObject.Offset = listResponse.APIListObject.Offset + listResponse.APIListObject.Limit
+		req.Offset = listResponse.Offset + listResponse.Limit
 	}
 
 	return nil, nil
@@ -305,7 +305,7 @@ func getPagerDutyIncident(ctx context.Context, d *plugin.QueryData, h *plugin.Hy
 		data, err := client.GetIncidentWithContext(ctx, id)
 		return data, err
 	}
-	getResponse, err := plugin.RetryHydrate(ctx, d, h, getDetails, &plugin.RetryConfig{ShouldRetryError: shouldRetryError})
+	getResponse, err := plugin.RetryHydrate(ctx, d, h, getDetails, &plugin.RetryConfig{ShouldRetryErrorFunc: shouldRetryError})
 	if err != nil {
 		plugin.Logger(ctx).Error("pagerduty_incident.getPagerDutyIncident", "query_error", err)
 

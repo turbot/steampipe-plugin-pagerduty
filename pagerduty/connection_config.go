@@ -1,7 +1,7 @@
 package pagerduty
 
 import (
-	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
+	"github.com/turbot/steampipe-plugin-sdk/v6/plugin"
 )
 
 type pagerDutyConfig struct {
@@ -14,9 +14,9 @@ func ConfigInstance() interface{} {
 
 // GetConfig :: retrieve and cast connection config from query data
 func GetConfig(connection *plugin.Connection) pagerDutyConfig {
-	if connection == nil || connection.Config == nil {
+	if connection == nil || connection.GetConfig() == nil {
 		return pagerDutyConfig{}
 	}
-	config, _ := connection.Config.(pagerDutyConfig)
+	config, _ := connection.GetConfig().(pagerDutyConfig)
 	return config
 }

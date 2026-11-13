@@ -5,9 +5,9 @@ import (
 
 	"github.com/PagerDuty/go-pagerduty"
 
-	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
-	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
-	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/transform"
+	"github.com/turbot/steampipe-plugin-sdk/v6/grpc/proto"
+	"github.com/turbot/steampipe-plugin-sdk/v6/plugin"
+	"github.com/turbot/steampipe-plugin-sdk/v6/plugin/transform"
 )
 
 //// TABLE DEFINITION
@@ -173,7 +173,7 @@ func listPagerDutyServices(ctx context.Context, d *plugin.QueryData, _ *plugin.H
 			maxResult = uint(*limit)
 		}
 	}
-	req.APIListObject.Limit = maxResult
+	req.Limit = maxResult
 
 	// Check for additional models to include in response
 	// for example, escalation_policy, integrations, teams
