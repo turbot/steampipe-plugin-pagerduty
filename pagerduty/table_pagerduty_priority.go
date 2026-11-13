@@ -4,9 +4,9 @@ import (
 	"context"
 
 	"github.com/PagerDuty/go-pagerduty"
-	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
-	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
-	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/transform"
+	"github.com/turbot/steampipe-plugin-sdk/v6/grpc/proto"
+	"github.com/turbot/steampipe-plugin-sdk/v6/plugin"
+	"github.com/turbot/steampipe-plugin-sdk/v6/plugin/transform"
 )
 
 //// TABLE DEFINITION
@@ -82,7 +82,7 @@ func listPagerDutyPriorities(ctx context.Context, d *plugin.QueryData, h *plugin
 		data, err := client.ListPrioritiesWithContext(ctx)
 		return data, err
 	}
-	listResponse, err := plugin.RetryHydrate(ctx, d, h, listPage, &plugin.RetryConfig{ShouldRetryError: shouldRetryError})
+	listResponse, err := plugin.RetryHydrate(ctx, d, h, listPage, &plugin.RetryConfig{ShouldRetryErrorFunc: shouldRetryError})
 	if err != nil {
 		// If incident priority level is not enabled, API returns 404 Not Found error
 		if isNotFoundError(err) {

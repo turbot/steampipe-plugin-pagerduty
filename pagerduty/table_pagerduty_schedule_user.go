@@ -4,9 +4,9 @@ import (
 	"context"
 
 	"github.com/PagerDuty/go-pagerduty"
-	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
-	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
-	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/transform"
+	"github.com/turbot/steampipe-plugin-sdk/v6/grpc/proto"
+	"github.com/turbot/steampipe-plugin-sdk/v6/plugin"
+	"github.com/turbot/steampipe-plugin-sdk/v6/plugin/transform"
 )
 
 func tablePagerDutyScheduleUser(_ context.Context) *plugin.Table {
@@ -133,7 +133,7 @@ func listPagerDutyScheduleUsers(ctx context.Context, d *plugin.QueryData, h *plu
 		users, err := client.ListOnCallUsersWithContext(ctx, schedule.ID, pagerduty.ListOnCallUsersOptions{})
 		return users, err
 	}
-	listResponse, err := plugin.RetryHydrate(ctx, d, h, listPage, &plugin.RetryConfig{ShouldRetryError: shouldRetryError})
+	listResponse, err := plugin.RetryHydrate(ctx, d, h, listPage, &plugin.RetryConfig{ShouldRetryErrorFunc: shouldRetryError})
 	if err != nil {
 		plugin.Logger(ctx).Error("pagerduty_schedule_user.listPagerDutyScheduleUsers", "query_error", err)
 		return nil, err
